@@ -1,13 +1,23 @@
 {
     "name": "stackmasteraliza/laravel-api-response",
-    "description": "A clean and consistent API response builder for Laravel applications",
+    "description": "A clean, fluent, and consistent API response builder for Laravel 10/11. Features standardized JSON responses, automatic pagination metadata, built-in exception handling, validation error formatting, and a convenient trait for controllers.",
     "keywords": [
         "laravel",
+        "php",
         "api",
         "response",
         "json",
         "rest",
-        "restful"
+        "restful",
+        "api-response",
+        "json-response",
+        "pagination",
+        "exception-handler",
+        "validation",
+        "http-response",
+        "laravel-package",
+        "rest-api",
+        "stackmasteraliza"
     ],
     "license": "MIT",
     "authors": [
