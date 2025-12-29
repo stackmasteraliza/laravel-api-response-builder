@@ -1,6 +1,6 @@
 {
     "name": "stackmasteraliza/laravel-api-response",
-    "description": "A clean, fluent, and consistent API response builder for Laravel 10/11. Features standardized JSON responses, automatic pagination metadata, built-in exception handling, validation error formatting, and a convenient trait for controllers.",
+    "description": "A clean, fluent, and consistent API response builder for Laravel 10/11/12. Features standardized JSON responses, automatic pagination metadata, built-in exception handling, validation error formatting, and a convenient trait for controllers.",
     "keywords": [
         "laravel",
         "php",
@@ -28,10 +28,10 @@
     ],
     "require": {
         "php": "^8.1",
-        "illuminate/support": "^10.0|^11.0"
+        "illuminate/support": "^10.0|^11.0|^12.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.0|^9.0",
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
         "phpunit/phpunit": "^10.0|^11.0"
     },
     "autoload": {
