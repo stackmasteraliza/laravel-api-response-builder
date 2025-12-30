@@ -15,9 +15,11 @@ class SwaggerController extends Controller
     public function index(): Response
     {
         $title = config('api-response.openapi.title', config('app.name', 'API') . ' Documentation');
+        $appName = config('api-response.openapi.app_name', config('app.name', 'API'));
+        $appLogo = config('api-response.openapi.app_logo', null);
         $specUrl = url('/api-docs/openapi.json');
 
-        $html = $this->getSwaggerUIHtml($title, $specUrl);
+        $html = $this->getSwaggerUIHtml($title, $specUrl, $appName, $appLogo);
 
         return response($html)->header('Content-Type', 'text/html');
     }
@@ -35,9 +37,12 @@ class SwaggerController extends Controller
     /**
      * Get the Swagger UI HTML.
      */
-    protected function getSwaggerUIHtml(string $title, string $specUrl): string
+    protected function getSwaggerUIHtml(string $title, string $specUrl, string $appName, ?string $appLogo): string
     {
         $themeColor = config('api-response.openapi.theme_color', '#10b981');
+        $logoHtml = $appLogo
+            ? "<img src=\"{$appLogo}\" alt=\"{$appName}\" class=\"app-logo\">"
+            : "<div class=\"app-logo-placeholder\">" . strtoupper(substr($appName, 0, 2)) . "</div>";
 
         return <<<HTML
 <!DOCTYPE html>
@@ -48,23 +53,32 @@ class SwaggerController extends Controller
     <title>{$title}</title>
     <link rel="icon" type="image/png" href="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png">
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: {$themeColor};
             --primary-dark: #059669;
-            --primary-light: #047857;
-            --bg-light: #ffffff;
-            --bg-card: #f8fafc;
-            --bg-input: #f1f5f9;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
+            --primary-light: #34d399;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --bg-dark: #000000;
+            --bg-card: #0d0d0d;
+            --bg-elevated: #141414;
+            --bg-input: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #71717a;
+            --text-muted: #52525b;
+            --border-color: #27272a;
+            --border-subtle: #1f1f23;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --info: #3b82f6;
-            --purple: #8b5cf6;
+            --info: #06b6d4;
+            --get: #10b981;
+            --post: #3b82f6;
+            --put: #f59e0b;
+            --delete: #ef4444;
+            --patch: #8b5cf6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -76,26 +90,29 @@ class SwaggerController extends Controller
 
         body {
             margin: 0;
-            background: var(--bg-light);
+            background: var(--bg-dark);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-primary);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* Custom Header */
         .custom-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: var(--bg-dark);
             border-bottom: 1px solid var(--border-color);
             padding: 0;
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(12px);
         }
 
         .header-content {
-            max-width: 1460px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 16px 24px;
+            padding: 16px 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -107,21 +124,25 @@ class SwaggerController extends Controller
             gap: 16px;
         }
 
-        .swagger-logo {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
+        .app-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        .app-logo-placeholder {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-        }
-
-        .swagger-logo svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 4px 20px var(--primary-glow);
         }
 
         .header-title {
@@ -130,144 +151,153 @@ class SwaggerController extends Controller
         }
 
         .header-title h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            color: #ffffff;
-            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
         }
 
         .header-title span {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--text-secondary);
             margin-top: 2px;
+            font-weight: 400;
         }
 
-        .header-badge {
+        .header-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
         .badge {
-            padding: 4px 10px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
 
-        .badge-version {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .badge-primary {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-light);
+            border-color: rgba(16, 185, 129, 0.2);
         }
 
-        .badge-oas {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 100%);
+            padding: 48px 32px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Swagger UI Overrides - Light Theme with Green */
-        /* Force white background everywhere */
-        #swagger-ui,
-        .swagger-ui,
-        .swagger-ui *:not(.opblock-summary-method):not(.btn):not(.badge):not(.swagger-logo):not(.custom-header):not(.custom-header *) {
-            background-color: transparent;
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
         }
 
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Swagger UI Overrides */
         #swagger-ui {
-            background: var(--bg-light) !important;
+            background: var(--bg-dark) !important;
         }
 
         .swagger-ui,
         .swagger-ui .wrapper,
-        .swagger-ui .opblock-tag-section,
-        .swagger-ui .opblock-tag-section .opblock,
-        .swagger-ui .operation-tag-content,
-        .swagger-ui .swagger-container,
         .swagger-ui div,
         .swagger-ui section {
-            background: var(--bg-light) !important;
+            background: var(--bg-dark) !important;
         }
 
         .swagger-ui {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-            background: var(--bg-light) !important;
         }
 
         .swagger-ui .wrapper {
-            max-width: 1460px;
-            padding: 0 24px;
-            background: var(--bg-light) !important;
+            max-width: 1400px;
+            padding: 32px;
         }
 
-        .swagger-ui .topbar { display: none !important; }
-
-        /* Force white background on all major containers */
-        .swagger-ui .opblock-tag-section,
-        .swagger-ui .no-margin,
-        .swagger-ui .operations-wrapper,
-        .swagger-ui .operation-tag-content,
-        .swagger-ui .swagger-container {
-            background: var(--bg-light) !important;
-        }
-
+        .swagger-ui .topbar,
         .swagger-ui .information-container {
-            background: var(--bg-card) !important;
-            border-radius: 12px;
-            margin: 24px auto !important;
-            padding: 32px !important;
-            border: 1px solid var(--border-color);
-            max-width: 800px;
-            text-align: center;
+            display: none !important;
         }
 
-        .swagger-ui .info {
-            margin: 0 auto !important;
-        }
-
-        .swagger-ui .info .title {
-            font-family: 'Inter', sans-serif !important;
-            color: var(--text-primary) !important;
-            font-size: 28px !important;
-            font-weight: 700 !important;
-        }
-
-        .swagger-ui .info .title small {
-            background: var(--primary) !important;
-            color: white !important;
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-size: 12px;
-            vertical-align: middle;
-            margin-left: 10px;
-        }
-
-        .swagger-ui .info .description,
-        .swagger-ui .info .description p {
-            font-family: 'Inter', sans-serif !important;
-            color: var(--text-secondary) !important;
-            font-size: 14px !important;
-            line-height: 1.6 !important;
-            text-align: center;
-        }
-
-        .swagger-ui .info a {
-            color: var(--primary) !important;
-        }
-
-        .swagger-ui .info a:hover {
-            color: var(--primary-dark) !important;
-        }
-
+        /* Scheme Container */
         .swagger-ui .scheme-container {
             background: var(--bg-card) !important;
             box-shadow: none !important;
             border-radius: 12px;
-            padding: 16px 24px !important;
-            margin-bottom: 24px;
+            padding: 20px 24px !important;
+            margin-bottom: 32px;
             border: 1px solid var(--border-color);
         }
 
@@ -275,6 +305,10 @@ class SwaggerController extends Controller
         .swagger-ui label {
             color: var(--text-secondary) !important;
             font-family: 'Inter', sans-serif !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
         }
 
         .swagger-ui select {
@@ -282,8 +316,15 @@ class SwaggerController extends Controller
             color: var(--text-primary) !important;
             border: 1px solid var(--border-color) !important;
             border-radius: 8px !important;
-            padding: 8px 12px !important;
+            padding: 10px 14px !important;
             font-family: 'Inter', sans-serif !important;
+            font-size: 13px !important;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .swagger-ui select:hover {
+            border-color: var(--primary) !important;
         }
 
         /* Filter Input */
@@ -293,7 +334,7 @@ class SwaggerController extends Controller
             background: var(--bg-card) !important;
             border-radius: 12px;
             padding: 16px 24px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
             border: 1px solid var(--border-color);
         }
 
@@ -305,97 +346,128 @@ class SwaggerController extends Controller
             border-radius: 8px !important;
             padding: 12px 16px !important;
             font-family: 'Inter', sans-serif !important;
+            font-size: 14px !important;
             width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .swagger-ui .filter input:focus,
+        .swagger-ui .operation-filter-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px var(--primary-glow) !important;
+            outline: none !important;
         }
 
         .swagger-ui .filter input::placeholder,
         .swagger-ui .operation-filter-input::placeholder {
-            color: var(--text-secondary) !important;
+            color: var(--text-muted) !important;
         }
 
         /* Operation Tags */
+        .swagger-ui .opblock-tag-section {
+            margin-bottom: 24px;
+        }
+
         .swagger-ui .opblock-tag {
             color: var(--text-primary) !important;
             font-family: 'Inter', sans-serif !important;
             font-weight: 600 !important;
-            border-bottom: 1px solid var(--border-color) !important;
+            font-size: 16px !important;
+            border: none !important;
             padding: 16px 0 !important;
-            background: var(--bg-light) !important;
+            background: transparent !important;
+            transition: color 0.2s;
         }
 
         .swagger-ui .opblock-tag:hover {
-            background: rgba(16, 185, 129, 0.05) !important;
+            color: var(--primary-light) !important;
         }
 
         .swagger-ui .opblock-tag svg {
             fill: var(--text-secondary) !important;
+            transition: fill 0.2s;
+        }
+
+        .swagger-ui .opblock-tag:hover svg {
+            fill: var(--primary-light) !important;
         }
 
         .swagger-ui .opblock-tag small {
-            color: var(--text-secondary) !important;
+            color: var(--text-muted) !important;
+            font-size: 12px !important;
         }
 
         /* Operation Blocks */
         .swagger-ui .opblock {
-            background: var(--bg-light) !important;
+            background: var(--bg-card) !important;
             border: 1px solid var(--border-color) !important;
             border-radius: 12px !important;
             margin-bottom: 12px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
             overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .swagger-ui .opblock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
         }
 
         .swagger-ui .opblock .opblock-summary {
             border: none !important;
-            padding: 12px 16px !important;
+            padding: 16px 20px !important;
+            background: var(--bg-card) !important;
         }
 
         .swagger-ui .opblock .opblock-summary-method {
             border-radius: 6px !important;
             font-family: 'Inter', sans-serif !important;
-            font-weight: 600 !important;
-            font-size: 12px !important;
+            font-weight: 700 !important;
+            font-size: 11px !important;
             min-width: 70px !important;
             padding: 8px 0 !important;
             text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .swagger-ui .opblock.opblock-get .opblock-summary-method {
-            background: var(--success) !important;
+            background: var(--get) !important;
         }
         .swagger-ui .opblock.opblock-post .opblock-summary-method {
-            background: var(--info) !important;
+            background: var(--post) !important;
         }
         .swagger-ui .opblock.opblock-put .opblock-summary-method {
-            background: var(--warning) !important;
+            background: var(--put) !important;
         }
         .swagger-ui .opblock.opblock-delete .opblock-summary-method {
-            background: var(--danger) !important;
+            background: var(--delete) !important;
         }
         .swagger-ui .opblock.opblock-patch .opblock-summary-method {
-            background: var(--purple) !important;
+            background: var(--patch) !important;
         }
 
         .swagger-ui .opblock.opblock-get {
-            border-left: 4px solid var(--success) !important;
+            border-left: 3px solid var(--get) !important;
         }
         .swagger-ui .opblock.opblock-post {
-            border-left: 4px solid var(--info) !important;
+            border-left: 3px solid var(--post) !important;
         }
         .swagger-ui .opblock.opblock-put {
-            border-left: 4px solid var(--warning) !important;
+            border-left: 3px solid var(--put) !important;
         }
         .swagger-ui .opblock.opblock-delete {
-            border-left: 4px solid var(--danger) !important;
+            border-left: 3px solid var(--delete) !important;
         }
         .swagger-ui .opblock.opblock-patch {
-            border-left: 4px solid var(--purple) !important;
+            border-left: 3px solid var(--patch) !important;
         }
 
         .swagger-ui .opblock .opblock-summary-path {
             color: var(--text-primary) !important;
             font-family: 'JetBrains Mono', monospace !important;
             font-size: 14px !important;
+            font-weight: 500 !important;
         }
 
         .swagger-ui .opblock .opblock-summary-description {
@@ -405,23 +477,33 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .opblock-body {
-            background: var(--bg-card) !important;
+            background: var(--bg-elevated) !important;
+            padding: 20px !important;
         }
 
         .swagger-ui .opblock-section-header {
-            background: var(--bg-input) !important;
+            background: var(--bg-card) !important;
             box-shadow: none !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            padding: 12px 20px !important;
         }
 
         .swagger-ui .opblock-section-header h4 {
             color: var(--text-primary) !important;
             font-family: 'Inter', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
         }
 
         .swagger-ui .opblock-description-wrapper,
-        .swagger-ui .opblock-description-wrapper p {
+        .swagger-ui .opblock-description-wrapper p,
+        .swagger-ui .opblock-external-docs-wrapper,
+        .swagger-ui .opblock-title_normal {
             color: var(--text-secondary) !important;
             font-family: 'Inter', sans-serif !important;
+            font-size: 13px !important;
         }
 
         /* Parameters */
@@ -432,28 +514,52 @@ class SwaggerController extends Controller
         .swagger-ui .parameter__name {
             color: var(--text-primary) !important;
             font-family: 'JetBrains Mono', monospace !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+        }
+
+        .swagger-ui .parameter__name.required::after {
+            color: var(--danger) !important;
         }
 
         .swagger-ui .parameter__type {
-            color: var(--primary) !important;
+            color: var(--primary-light) !important;
             font-family: 'JetBrains Mono', monospace !important;
+            font-size: 12px !important;
         }
 
         .swagger-ui .parameter__in {
-            color: var(--text-secondary) !important;
+            color: var(--text-muted) !important;
+            font-size: 11px !important;
         }
 
         .swagger-ui table tbody tr td {
             border-color: var(--border-color) !important;
             color: var(--text-secondary) !important;
+            padding: 12px 0 !important;
         }
 
         .swagger-ui .parameters-col_description input,
-        .swagger-ui .parameters-col_description textarea {
-            background: var(--bg-light) !important;
+        .swagger-ui .parameters-col_description textarea,
+        .swagger-ui textarea,
+        .swagger-ui .body-param textarea,
+        .swagger-ui .body-param__text {
+            background: var(--bg-input) !important;
             color: var(--text-primary) !important;
             border: 1px solid var(--border-color) !important;
-            border-radius: 6px !important;
+            border-radius: 8px !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 13px !important;
+            padding: 12px !important;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .swagger-ui .parameters-col_description input:focus,
+        .swagger-ui .parameters-col_description textarea:focus,
+        .swagger-ui textarea:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px var(--primary-glow) !important;
+            outline: none !important;
         }
 
         /* Buttons */
@@ -462,32 +568,38 @@ class SwaggerController extends Controller
             font-weight: 600 !important;
             border-radius: 8px !important;
             transition: all 0.2s ease !important;
+            font-size: 13px !important;
         }
 
         .swagger-ui .btn.execute {
             background: var(--primary) !important;
             border-color: var(--primary) !important;
             color: white !important;
-            padding: 10px 24px !important;
-            font-size: 13px !important;
+            padding: 12px 28px !important;
+            box-shadow: 0 4px 14px var(--primary-glow) !important;
         }
 
         .swagger-ui .btn.execute:hover {
             background: var(--primary-dark) !important;
             border-color: var(--primary-dark) !important;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow) !important;
         }
 
         .swagger-ui .btn.cancel {
             background: transparent !important;
             border: 1px solid var(--border-color) !important;
             color: var(--text-secondary) !important;
+            padding: 12px 28px !important;
         }
 
         .swagger-ui .btn.cancel:hover {
             border-color: var(--danger) !important;
             color: var(--danger) !important;
+        }
+
+        .swagger-ui .btn-group .btn {
+            padding: 8px 16px !important;
         }
 
         /* Response Section */
@@ -496,12 +608,14 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .responses-inner {
-            padding: 16px !important;
+            padding: 0 !important;
         }
 
         .swagger-ui .response-col_status {
             color: var(--text-primary) !important;
             font-family: 'JetBrains Mono', monospace !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
         }
 
         .swagger-ui .response-col_description {
@@ -510,54 +624,26 @@ class SwaggerController extends Controller
 
         .swagger-ui .response code {
             background: var(--bg-input) !important;
-            color: var(--primary) !important;
+            color: var(--primary-light) !important;
             border-radius: 4px;
             padding: 2px 6px;
+            font-family: 'JetBrains Mono', monospace !important;
         }
 
-        /* Code Blocks and Textareas */
+        /* Code Blocks */
         .swagger-ui .highlight-code,
-        .swagger-ui .microlight {
-            background: #1e293b !important;
+        .swagger-ui .microlight,
+        .swagger-ui pre {
+            background: var(--bg-input) !important;
             border-radius: 8px !important;
             border: 1px solid var(--border-color) !important;
             font-family: 'JetBrains Mono', monospace !important;
             font-size: 13px !important;
+            padding: 16px !important;
         }
 
         .swagger-ui .microlight {
-            color: #34d399 !important;
-        }
-
-        /* Request body textarea */
-        .swagger-ui textarea,
-        .swagger-ui .body-param textarea,
-        .swagger-ui .body-param__text,
-        .swagger-ui textarea.body-param__text {
-            background: #1e293b !important;
-            color: #e2e8f0 !important;
-            border: 1px solid var(--border-color) !important;
-            border-radius: 8px !important;
-            font-family: 'JetBrains Mono', monospace !important;
-            font-size: 13px !important;
-            padding: 12px !important;
-        }
-
-        .swagger-ui .body-param {
-            background: var(--bg-card) !important;
-        }
-
-        /* Example value and model displays */
-        .swagger-ui .example,
-        .swagger-ui .model-example {
-            background: #1e293b !important;
-            color: #e2e8f0 !important;
-        }
-
-        /* Rendred markdown in descriptions */
-        .swagger-ui .markdown p,
-        .swagger-ui .markdown {
-            color: var(--text-secondary) !important;
+            color: var(--primary-light) !important;
         }
 
         /* Models Section */
@@ -565,15 +651,18 @@ class SwaggerController extends Controller
             border: 1px solid var(--border-color) !important;
             border-radius: 12px !important;
             background: var(--bg-card) !important;
+            margin-top: 32px;
         }
 
         .swagger-ui section.models h4 {
             color: var(--text-primary) !important;
             font-family: 'Inter', sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
         }
 
         .swagger-ui .model-container {
-            background: var(--bg-input) !important;
+            background: var(--bg-elevated) !important;
             border-radius: 8px;
             margin: 8px 0;
         }
@@ -581,6 +670,7 @@ class SwaggerController extends Controller
         .swagger-ui .model {
             color: var(--text-secondary) !important;
             font-family: 'JetBrains Mono', monospace !important;
+            font-size: 12px !important;
         }
 
         .swagger-ui .model-title {
@@ -589,7 +679,26 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .prop-type {
-            color: var(--primary) !important;
+            color: var(--primary-light) !important;
+        }
+
+        .swagger-ui .prop-format {
+            color: var(--text-muted) !important;
+        }
+
+        /* Tabs */
+        .swagger-ui .tab li {
+            color: var(--text-secondary) !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .swagger-ui .tab li.active {
+            color: var(--text-primary) !important;
+        }
+
+        .swagger-ui .tab li button.tablinks {
+            color: inherit !important;
+            background: transparent !important;
         }
 
         /* Scrollbar */
@@ -599,7 +708,7 @@ class SwaggerController extends Controller
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--bg-card);
+            background: var(--bg-dark);
         }
 
         ::-webkit-scrollbar-thumb {
@@ -608,14 +717,14 @@ class SwaggerController extends Controller
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
+            background: var(--text-muted);
         }
 
         /* Footer */
         .powered-by {
             text-align: center;
-            padding: 24px;
-            color: var(--text-secondary);
+            padding: 32px;
+            color: var(--text-muted);
             font-size: 13px;
             border-top: 1px solid var(--border-color);
             margin-top: 48px;
@@ -623,27 +732,49 @@ class SwaggerController extends Controller
         }
 
         .powered-by a {
-            color: var(--primary);
+            color: var(--primary-light);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
         }
 
         .powered-by a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
+            color: var(--primary);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
-                gap: 12px;
+                gap: 16px;
                 text-align: center;
+                padding: 16px;
             }
             .header-left {
                 flex-direction: column;
             }
+            .hero-section {
+                padding: 32px 16px;
+            }
+            .hero-title {
+                font-size: 24px;
+            }
+            .hero-stats {
+                gap: 24px;
+            }
+            .swagger-ui .wrapper {
+                padding: 16px;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
     </style>
 </head>
@@ -651,26 +782,49 @@ class SwaggerController extends Controller
     <div class="custom-header">
         <div class="header-content">
             <div class="header-left">
-                <div class="swagger-logo">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22c-5.523 0-10-4.477-10-10S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-15v8l6-4-6-4z"/>
-                    </svg>
-                </div>
+                {$logoHtml}
                 <div class="header-title">
-                    <h1>{$title}</h1>
-                    <span>Interactive API Documentation</span>
+                    <h1>{$appName}</h1>
+                    <span>API Documentation</span>
                 </div>
             </div>
-            <div class="header-badge">
-                <span class="badge badge-version">v1.0.0</span>
-                <span class="badge badge-oas">OAS 3.0</span>
+            <div class="header-right">
+                <span class="badge badge-primary">OpenAPI 3.0</span>
+                <span class="badge">v1.0.0</span>
             </div>
         </div>
     </div>
-    <div id="swagger-ui"></div>
-    <div class="powered-by">
-        Powered by <a href="https://github.com/stackmasteraliza/laravel-api-response-builder" target="_blank">Laravel API Response Builder</a> &bull; Built with Swagger UI
+
+    <div class="hero-section">
+        <div class="hero-content">
+            <h2 class="hero-title">Welcome to <span>{$appName}</span> API</h2>
+            <p class="hero-description">
+                Explore and interact with our API endpoints. This documentation is auto-generated
+                from your Laravel routes and provides a complete reference for all available endpoints.
+            </p>
+            <div class="hero-stats" id="api-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-endpoints">-</div>
+                    <div class="stat-label">Endpoints</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-tags">-</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-schemas">-</div>
+                    <div class="stat-label">Schemas</div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div id="swagger-ui"></div>
+
+    <div class="powered-by">
+        Built with <a href="https://github.com/stackmasteraliza/laravel-api-response-builder" target="_blank">Laravel API Response Builder</a>
+    </div>
+
     <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
     <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
     <script>
@@ -697,7 +851,33 @@ class SwaggerController extends Controller
                 persistAuthorization: true,
                 syntaxHighlight: {
                     activate: true,
-                    theme: "agate"
+                    theme: "monokai"
+                },
+                onComplete: function() {
+                    // Fetch spec and update stats
+                    fetch("{$specUrl}")
+                        .then(response => response.json())
+                        .then(spec => {
+                            let endpoints = 0;
+                            if (spec.paths) {
+                                Object.values(spec.paths).forEach(path => {
+                                    endpoints += Object.keys(path).filter(m =>
+                                        ['get', 'post', 'put', 'delete', 'patch'].includes(m)
+                                    ).length;
+                                });
+                            }
+                            const tags = spec.tags ? spec.tags.length : 0;
+                            const schemas = spec.components && spec.components.schemas
+                                ? Object.keys(spec.components.schemas).length
+                                : 0;
+
+                            document.getElementById('stat-endpoints').textContent = endpoints;
+                            document.getElementById('stat-tags').textContent = tags || '-';
+                            document.getElementById('stat-schemas').textContent = schemas || '-';
+                        })
+                        .catch(() => {
+                            document.getElementById('stat-endpoints').textContent = '-';
+                        });
                 }
             });
             window.ui = ui;

@@ -106,6 +106,12 @@ return [
         // Enable/disable the documentation routes
         'enabled' => env('API_DOCS_ENABLED', true),
 
+        // Application name (displayed in header)
+        'app_name' => env('API_DOCS_APP_NAME', env('APP_NAME', 'API')),
+
+        // Application logo URL (optional - displays initials if not set)
+        'app_logo' => env('API_DOCS_APP_LOGO', null),
+
         // API documentation title
         'title' => env('API_DOCS_TITLE', 'API Documentation'),
 
@@ -121,8 +127,8 @@ return [
         // Documentation route path
         'docs_route' => 'api-docs',
 
-        // Theme color for Swagger UI
-        'theme_color' => '#3b82f6',
+        // Theme color for documentation UI (default: green)
+        'theme_color' => env('API_DOCS_THEME_COLOR', '#10b981'),
 
         // API servers
         'servers' => [
