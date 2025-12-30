@@ -900,24 +900,28 @@ class SwaggerController extends Controller
         .swagger-ui .model {
             color: var(--text-secondary) !important;
             font-family: 'JetBrains Mono', monospace !important;
-            font-size: 12px !important;
-            line-height: 1.6 !important;
+            font-size: 13px !important;
+            line-height: 1.4 !important;
         }
 
-        /* Schema row styling */
+        /* Schema row styling - collapsed view */
         .swagger-ui section.models .model-container {
-            display: flex !important;
-            align-items: center !important;
-            padding: 12px 20px !important;
+            padding: 10px 16px !important;
             transition: background 0.15s !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
+        }
+
+        .swagger-ui section.models .model-container:last-child {
+            border-bottom: none !important;
         }
 
         .swagger-ui section.models .model-container:hover {
             background: var(--bg-elevated) !important;
         }
 
+        /* Schema name - use white */
         .swagger-ui .model-title {
-            color: var(--primary) !important;
+            color: var(--text-primary) !important;
             font-family: 'JetBrains Mono', monospace !important;
             font-weight: 600 !important;
             font-size: 13px !important;
@@ -925,29 +929,33 @@ class SwaggerController extends Controller
             background: transparent !important;
             border: none !important;
             margin: 0 !important;
-            display: inline !important;
         }
 
         .swagger-ui .model-title__text {
-            color: var(--primary) !important;
+            color: var(--text-primary) !important;
             font-weight: 600 !important;
         }
 
+        /* Property types */
         .swagger-ui .prop-type {
-            color: var(--text-muted) !important;
-            font-weight: 400 !important;
+            color: var(--primary) !important;
+            font-weight: 500 !important;
             font-size: 12px !important;
+            background: rgba(16, 185, 129, 0.1) !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            margin-left: 8px !important;
         }
 
         .swagger-ui .prop-format {
             color: var(--text-muted) !important;
-            font-style: italic !important;
+            font-style: normal !important;
             font-size: 11px !important;
         }
 
-        /* Schema property rows */
+        /* Schema property rows - compact table style */
         .swagger-ui .model .property {
-            padding: 2px 0 !important;
+            padding: 0 !important;
             border: none !important;
         }
 
@@ -957,6 +965,7 @@ class SwaggerController extends Controller
             background: transparent !important;
         }
 
+        /* Property name styling */
         .swagger-ui .model .property-name {
             color: var(--text-primary) !important;
             font-weight: 500 !important;
@@ -966,8 +975,8 @@ class SwaggerController extends Controller
         .swagger-ui .model-toggle {
             background: transparent !important;
             border-radius: 4px !important;
-            padding: 4px 8px !important;
-            margin-left: 8px !important;
+            padding: 2px 6px !important;
+            margin-left: 4px !important;
         }
 
         .swagger-ui .model-toggle::after {
@@ -978,44 +987,80 @@ class SwaggerController extends Controller
             color: var(--primary) !important;
         }
 
-        /* Inner braces styling */
+        /* Braces styling - more subtle */
         .swagger-ui .model .brace-open,
         .swagger-ui .model .brace-close {
             color: var(--text-muted) !important;
+            font-weight: 400 !important;
         }
 
+        /* Inner object - compact indentation */
         .swagger-ui .model .inner-object {
-            padding-left: 16px !important;
-            border-left: 2px solid var(--border-color) !important;
-            margin-left: 8px !important;
-            margin-top: 8px !important;
+            padding-left: 12px !important;
+            border-left: 2px solid var(--primary) !important;
+            margin-left: 4px !important;
+            margin-top: 4px !important;
+            margin-bottom: 4px !important;
         }
 
-        /* Expanded model view */
+        /* Expanded model content */
         .swagger-ui section.models .model-box {
-            padding: 12px 20px !important;
-            background: var(--bg-elevated) !important;
-            border-radius: 8px !important;
-            margin: 8px 16px 16px !important;
+            padding: 12px 16px !important;
+            background: var(--bg-card) !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            border-top: 1px solid var(--border-subtle) !important;
+        }
+
+        /* Model table styling for properties */
+        .swagger-ui .model table {
+            margin: 0 !important;
+        }
+
+        .swagger-ui .model table td {
+            padding: 6px 8px 6px 0 !important;
+            vertical-align: top !important;
+        }
+
+        .swagger-ui .model table tr {
+            border-bottom: 1px solid var(--border-subtle) !important;
+        }
+
+        .swagger-ui .model table tr:last-child {
+            border-bottom: none !important;
         }
 
         /* Example values */
         .swagger-ui .model .model-example {
             background: var(--bg-input) !important;
             border-radius: 4px !important;
-            padding: 8px !important;
+            padding: 6px 10px !important;
             margin-top: 4px !important;
         }
 
         .swagger-ui span.model-example-value,
         .swagger-ui .example {
             color: var(--primary-light) !important;
-            font-style: italic !important;
+            font-style: normal !important;
+        }
+
+        /* Nullable badge */
+        .swagger-ui .model span[style*="color"] {
+            color: var(--text-muted) !important;
+            font-size: 11px !important;
         }
 
         /* Required star */
         .swagger-ui .model .star {
             color: var(--danger) !important;
+        }
+
+        /* Description text in schema */
+        .swagger-ui .model .renderedMarkdown p {
+            margin: 4px 0 !important;
+            color: var(--text-secondary) !important;
+            font-size: 12px !important;
+            font-family: 'Inter', sans-serif !important;
         }
 
         /* Tabs */
