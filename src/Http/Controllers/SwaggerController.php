@@ -170,16 +170,49 @@ class SwaggerController extends Controller
         }
 
         /* Swagger UI Overrides - Light Theme with Green */
+        /* Force white background everywhere */
+        #swagger-ui,
+        .swagger-ui,
+        .swagger-ui *:not(.opblock-summary-method):not(.btn):not(.badge):not(.swagger-logo):not(.custom-header):not(.custom-header *) {
+            background-color: transparent;
+        }
+
+        #swagger-ui {
+            background: var(--bg-light) !important;
+        }
+
+        .swagger-ui,
+        .swagger-ui .wrapper,
+        .swagger-ui .opblock-tag-section,
+        .swagger-ui .opblock-tag-section .opblock,
+        .swagger-ui .operation-tag-content,
+        .swagger-ui .swagger-container,
+        .swagger-ui div,
+        .swagger-ui section {
+            background: var(--bg-light) !important;
+        }
+
         .swagger-ui {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            background: var(--bg-light) !important;
         }
 
         .swagger-ui .wrapper {
             max-width: 1460px;
             padding: 0 24px;
+            background: var(--bg-light) !important;
         }
 
         .swagger-ui .topbar { display: none !important; }
+
+        /* Force white background on all major containers */
+        .swagger-ui .opblock-tag-section,
+        .swagger-ui .no-margin,
+        .swagger-ui .operations-wrapper,
+        .swagger-ui .operation-tag-content,
+        .swagger-ui .swagger-container {
+            background: var(--bg-light) !important;
+        }
 
         .swagger-ui .information-container {
             background: var(--bg-card) !important;
@@ -254,15 +287,18 @@ class SwaggerController extends Controller
         }
 
         /* Filter Input */
-        .swagger-ui .filter-container {
-            background: var(--bg-card);
+        .swagger-ui .filter-container,
+        .swagger-ui .filter-wrapper,
+        .swagger-ui .filter {
+            background: var(--bg-card) !important;
             border-radius: 12px;
             padding: 16px 24px;
             margin-bottom: 24px;
             border: 1px solid var(--border-color);
         }
 
-        .swagger-ui .filter input {
+        .swagger-ui .filter input,
+        .swagger-ui .operation-filter-input {
             background: var(--bg-input) !important;
             color: var(--text-primary) !important;
             border: 1px solid var(--border-color) !important;
@@ -272,7 +308,8 @@ class SwaggerController extends Controller
             width: 100%;
         }
 
-        .swagger-ui .filter input::placeholder {
+        .swagger-ui .filter input::placeholder,
+        .swagger-ui .operation-filter-input::placeholder {
             color: var(--text-secondary) !important;
         }
 
@@ -283,6 +320,7 @@ class SwaggerController extends Controller
             font-weight: 600 !important;
             border-bottom: 1px solid var(--border-color) !important;
             padding: 16px 0 !important;
+            background: var(--bg-light) !important;
         }
 
         .swagger-ui .opblock-tag:hover {
@@ -291,6 +329,10 @@ class SwaggerController extends Controller
 
         .swagger-ui .opblock-tag svg {
             fill: var(--text-secondary) !important;
+        }
+
+        .swagger-ui .opblock-tag small {
+            color: var(--text-secondary) !important;
         }
 
         /* Operation Blocks */
@@ -624,7 +666,7 @@ class SwaggerController extends Controller
                 persistAuthorization: true,
                 syntaxHighlight: {
                     activate: true,
-                    theme: "monokai"
+                    theme: "agate"
                 }
             });
             window.ui = ui;
