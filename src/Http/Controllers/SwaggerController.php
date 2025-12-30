@@ -515,7 +515,7 @@ class SwaggerController extends Controller
             padding: 2px 6px;
         }
 
-        /* Code Blocks */
+        /* Code Blocks and Textareas */
         .swagger-ui .highlight-code,
         .swagger-ui .microlight {
             background: #1e293b !important;
@@ -527,6 +527,37 @@ class SwaggerController extends Controller
 
         .swagger-ui .microlight {
             color: #34d399 !important;
+        }
+
+        /* Request body textarea */
+        .swagger-ui textarea,
+        .swagger-ui .body-param textarea,
+        .swagger-ui .body-param__text,
+        .swagger-ui textarea.body-param__text {
+            background: #1e293b !important;
+            color: #e2e8f0 !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 8px !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 13px !important;
+            padding: 12px !important;
+        }
+
+        .swagger-ui .body-param {
+            background: var(--bg-card) !important;
+        }
+
+        /* Example value and model displays */
+        .swagger-ui .example,
+        .swagger-ui .model-example {
+            background: #1e293b !important;
+            color: #e2e8f0 !important;
+        }
+
+        /* Rendred markdown in descriptions */
+        .swagger-ui .markdown p,
+        .swagger-ui .markdown {
+            color: var(--text-secondary) !important;
         }
 
         /* Models Section */
