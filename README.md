@@ -5,9 +5,12 @@ A clean and consistent API response builder for Laravel applications. This packa
 ## Features
 
 - Consistent API response structure
+- HTTP status code included in response body
 - Fluent interface for building responses
 - Built-in methods for common HTTP status codes
-- Automatic pagination metadata
+- Automatic pagination metadata (including cursor pagination)
+- Response macros for custom response types
+- Testing helpers for API assertions
 - Exception handler for consistent error responses
 - Facade and Trait support
 - Fully customizable via config
@@ -125,6 +128,7 @@ class UserController extends Controller
 
 ```json
 {
+    "status_code": 200,
     "success": true,
     "message": "Data retrieved successfully",
     "data": {
@@ -139,6 +143,7 @@ class UserController extends Controller
 
 ```json
 {
+    "status_code": 200,
     "success": true,
     "message": "Users retrieved successfully",
     "data": [
@@ -163,10 +168,42 @@ class UserController extends Controller
 }
 ```
 
+#### Cursor Paginated Response
+
+Cursor pagination is more efficient for large datasets:
+
+```php
+$users = User::cursorPaginate(15);
+return ApiResponse::success($users, 'Users retrieved successfully');
+```
+
+```json
+{
+    "status_code": 200,
+    "success": true,
+    "message": "Users retrieved successfully",
+    "data": [
+        {"id": 1, "name": "John Doe"},
+        {"id": 2, "name": "Jane Doe"}
+    ],
+    "meta": {
+        "per_page": 15,
+        "next_cursor": "eyJpZCI6MTUsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0",
+        "prev_cursor": null,
+        "path": "http://example.com/api/users",
+        "links": {
+            "next": "http://example.com/api/users?cursor=eyJpZCI6MTUuLi4",
+            "prev": null
+        }
+    }
+}
+```
+
 #### Error Response
 
 ```json
 {
+    "status_code": 422,
     "success": false,
     "message": "Validation failed",
     "errors": {
@@ -230,6 +267,85 @@ return ApiResponse::success($user)
     ->withHeader('X-Custom-Header', 'value');
 ```
 
+### Response Macros
+
+Define reusable custom response types using macros:
+
+```php
+// In your AppServiceProvider boot() method
+use Stackmasteraliza\ApiResponse\Facades\ApiResponse;
+
+ApiResponse::macro('banned', function (string $reason = 'Account suspended') {
+    return $this->error($reason, 403);
+});
+
+ApiResponse::macro('maintenance', function () {
+    return $this->error('Service under maintenance', 503);
+});
+```
+
+Usage:
+
+```php
+return ApiResponse::banned('Your account has been suspended');
+return ApiResponse::maintenance();
+```
+
+### Testing Helpers
+
+The package provides convenient testing assertions for your API tests:
+
+```php
+use Tests\TestCase;
+
+class UserControllerTest extends TestCase
+{
+    public function test_can_list_users()
+    {
+        $response = $this->getJson('/api/users');
+
+        $response->assertApiSuccess()
+                 ->assertApiStatusCode(200)
+                 ->assertApiMessage('Users retrieved successfully')
+                 ->assertApiHasData()
+                 ->assertApiPaginated();
+    }
+
+    public function test_validation_errors()
+    {
+        $response = $this->postJson('/api/users', []);
+
+        $response->assertApiError(422)
+                 ->assertApiMessage('Validation failed')
+                 ->assertApiHasErrors('email');
+    }
+
+    public function test_user_data()
+    {
+        $response = $this->getJson('/api/users/1');
+
+        $response->assertApiSuccess()
+                 ->assertApiDataContains(['id' => 1, 'name' => 'John Doe']);
+    }
+}
+```
+
+#### Available Test Assertions
+
+| Method | Description |
+|--------|-------------|
+| `assertApiSuccess()` | Assert response has `success: true` |
+| `assertApiError($statusCode)` | Assert response has `success: false` and optional status code |
+| `assertApiStatusCode($code)` | Assert status code in response body |
+| `assertApiMessage($message)` | Assert response message |
+| `assertApiHasData($key)` | Assert data exists (optionally check for specific key) |
+| `assertApiDataCount($count)` | Assert data array has specific count |
+| `assertApiData($expected)` | Assert data equals expected array |
+| `assertApiDataContains($expected)` | Assert data contains expected subset |
+| `assertApiPaginated()` | Assert response has pagination meta |
+| `assertApiCursorPaginated()` | Assert response has cursor pagination meta |
+| `assertApiHasErrors($key)` | Assert errors exist (optionally check for specific key) |
+
 ## Configuration
 
 ```php
@@ -241,6 +357,9 @@ return [
     // Include debug info in error responses (when APP_DEBUG=true)
     'include_debug_info' => env('API_RESPONSE_DEBUG', false),
 
+    // Include HTTP status code in response body
+    'include_status_code' => env('API_RESPONSE_INCLUDE_STATUS_CODE', true),
+
     // Customize response keys
     'keys' => [
         'success' => 'success',
@@ -248,8 +367,23 @@ return [
         'data' => 'data',
         'errors' => 'errors',
         'meta' => 'meta',
+        'status_code' => 'status_code',
     ],
 ];
+```
+
+### Disabling Status Code in Response Body
+
+If you prefer not to include the status code in the response body, you can disable it:
+
+```env
+API_RESPONSE_INCLUDE_STATUS_CODE=false
+```
+
+Or in your config file:
+
+```php
+'include_status_code' => false,
 ```
 
 ## Testing

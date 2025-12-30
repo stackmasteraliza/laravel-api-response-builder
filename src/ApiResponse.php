@@ -6,10 +6,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\Macroable;
 
 class ApiResponse
 {
+    use Macroable;
     protected array $response = [];
     protected int $statusCode = 200;
     protected array $headers = [];
@@ -27,7 +30,9 @@ class ApiResponse
             'data' => $this->formatData($data),
         ];
 
-        if ($data instanceof AbstractPaginator) {
+        if ($data instanceof CursorPaginator) {
+            $this->response['meta'] = $this->getCursorPaginationMeta($data);
+        } elseif ($data instanceof AbstractPaginator) {
             $this->response['meta'] = $this->getPaginationMeta($data);
         }
 
@@ -215,6 +220,10 @@ class ApiResponse
             return $data->resolve();
         }
 
+        if ($data instanceof CursorPaginator) {
+            return $data->items();
+        }
+
         if ($data instanceof AbstractPaginator) {
             return $data->items();
         }
@@ -244,6 +253,23 @@ class ApiResponse
                 'last' => $paginator->url($paginator->lastPage()),
                 'prev' => $paginator->previousPageUrl(),
                 'next' => $paginator->nextPageUrl(),
+            ],
+        ];
+    }
+
+    /**
+     * Get cursor pagination metadata.
+     */
+    protected function getCursorPaginationMeta(CursorPaginator $paginator): array
+    {
+        return [
+            'per_page' => $paginator->perPage(),
+            'next_cursor' => $paginator->nextCursor()?->encode(),
+            'prev_cursor' => $paginator->previousCursor()?->encode(),
+            'path' => $paginator->path(),
+            'links' => [
+                'next' => $paginator->nextPageUrl(),
+                'prev' => $paginator->previousPageUrl(),
             ],
         ];
     }

@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Stackmasteraliza\ApiResponse\ApiResponse withData(string $key, mixed $value)
  * @method static \Stackmasteraliza\ApiResponse\ApiResponse withHeader(string $key, string $value)
  * @method static \Stackmasteraliza\ApiResponse\ApiResponse withHeaders(array $headers)
+ * @method static void macro(string $name, callable $macro)
+ * @method static bool hasMacro(string $name)
  *
  * @see \Stackmasteraliza\ApiResponse\ApiResponse
  */
