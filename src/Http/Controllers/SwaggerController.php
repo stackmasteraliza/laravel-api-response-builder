@@ -862,9 +862,9 @@ class SwaggerController extends Controller
         .swagger-ui section.models h4 {
             color: var(--text-primary) !important;
             font-family: 'Inter', sans-serif !important;
-            font-size: 18px !important;
+            font-size: 16px !important;
             font-weight: 700 !important;
-            padding: 20px 24px !important;
+            padding: 16px 20px !important;
             background: var(--bg-elevated) !important;
             border-bottom: 1px solid var(--border-color) !important;
             margin: 0 !important;
@@ -876,68 +876,85 @@ class SwaggerController extends Controller
 
         .swagger-ui section.models .models-control {
             background: var(--bg-card) !important;
+            padding: 8px !important;
         }
 
+        /* Schema items as inline list */
         .swagger-ui .model-container {
-            background: var(--bg-elevated) !important;
-            border-radius: 8px !important;
-            margin: 12px !important;
-            border: 1px solid var(--border-color) !important;
-            overflow: hidden;
+            background: transparent !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
+        }
+
+        .swagger-ui .model-container:last-child {
+            border-bottom: none !important;
         }
 
         .swagger-ui .model-box {
-            background: var(--bg-elevated) !important;
-            padding: 12px 16px !important;
+            background: transparent !important;
+            padding: 0 !important;
         }
 
         .swagger-ui .model {
             color: var(--text-secondary) !important;
             font-family: 'JetBrains Mono', monospace !important;
-            font-size: 13px !important;
-            line-height: 1.5 !important;
+            font-size: 12px !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Schema row styling */
+        .swagger-ui section.models .model-container {
+            display: flex !important;
+            align-items: center !important;
+            padding: 12px 20px !important;
+            transition: background 0.15s !important;
+        }
+
+        .swagger-ui section.models .model-container:hover {
+            background: var(--bg-elevated) !important;
         }
 
         .swagger-ui .model-title {
-            color: var(--text-primary) !important;
-            font-family: 'Inter', sans-serif !important;
+            color: var(--primary) !important;
+            font-family: 'JetBrains Mono', monospace !important;
             font-weight: 600 !important;
-            font-size: 14px !important;
-            padding: 10px 16px !important;
-            background: var(--bg-elevated) !important;
-            border-bottom: 1px solid var(--border-color) !important;
+            font-size: 13px !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
             margin: 0 !important;
-            display: block !important;
+            display: inline !important;
         }
 
         .swagger-ui .model-title__text {
-            color: var(--primary-light) !important;
+            color: var(--primary) !important;
             font-weight: 600 !important;
         }
 
         .swagger-ui .prop-type {
-            color: var(--primary-light) !important;
-            font-weight: 500 !important;
+            color: var(--text-muted) !important;
+            font-weight: 400 !important;
+            font-size: 12px !important;
         }
 
         .swagger-ui .prop-format {
             color: var(--text-muted) !important;
             font-style: italic !important;
+            font-size: 11px !important;
         }
 
         /* Schema property rows */
         .swagger-ui .model .property {
-            padding: 4px 0 !important;
-            border-bottom: 1px solid var(--border-subtle) !important;
-        }
-
-        .swagger-ui .model .property:last-child {
-            border-bottom: none !important;
+            padding: 2px 0 !important;
+            border: none !important;
         }
 
         .swagger-ui .model-box-control,
         .swagger-ui .model-box-control:first-of-type {
-            padding: 8px 16px !important;
+            padding: 0 !important;
+            background: transparent !important;
         }
 
         .swagger-ui .model .property-name {
@@ -947,12 +964,17 @@ class SwaggerController extends Controller
 
         /* Schema expand/collapse button */
         .swagger-ui .model-toggle {
-            background: var(--bg-input) !important;
+            background: transparent !important;
             border-radius: 4px !important;
-            padding: 2px 6px !important;
+            padding: 4px 8px !important;
+            margin-left: 8px !important;
         }
 
         .swagger-ui .model-toggle::after {
+            color: var(--text-muted) !important;
+        }
+
+        .swagger-ui .model-toggle:hover::after {
             color: var(--primary) !important;
         }
 
@@ -963,17 +985,26 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .model .inner-object {
-            padding-left: 20px !important;
+            padding-left: 16px !important;
             border-left: 2px solid var(--border-color) !important;
             margin-left: 8px !important;
+            margin-top: 8px !important;
+        }
+
+        /* Expanded model view */
+        .swagger-ui section.models .model-box {
+            padding: 12px 20px !important;
+            background: var(--bg-elevated) !important;
+            border-radius: 8px !important;
+            margin: 8px 16px 16px !important;
         }
 
         /* Example values */
         .swagger-ui .model .model-example {
             background: var(--bg-input) !important;
-            border-radius: 6px !important;
-            padding: 12px !important;
-            margin-top: 8px !important;
+            border-radius: 4px !important;
+            padding: 8px !important;
+            margin-top: 4px !important;
         }
 
         .swagger-ui span.model-example-value,
