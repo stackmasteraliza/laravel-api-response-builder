@@ -776,17 +776,17 @@ class SwaggerController extends Controller
 
         .swagger-ui .btn.execute {
             background: var(--primary) !important;
-            border-color: var(--primary) !important;
+            border: none !important;
             color: white !important;
             padding: 12px 28px !important;
-            box-shadow: 0 4px 14px var(--primary-glow) !important;
+            box-shadow: none !important;
         }
 
         .swagger-ui .btn.execute:hover {
             background: var(--primary-dark) !important;
-            border-color: var(--primary-dark) !important;
+            border: none !important;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--primary-glow) !important;
+            box-shadow: none !important;
         }
 
         .swagger-ui .btn.cancel {
