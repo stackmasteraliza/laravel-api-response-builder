@@ -134,7 +134,7 @@ class SwaggerController extends Controller
         .app-logo-placeholder {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: var(--primary);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -142,7 +142,6 @@ class SwaggerController extends Controller
             font-weight: 700;
             font-size: 16px;
             color: white;
-            box-shadow: 0 4px 20px var(--primary-glow);
         }
 
         .header-title {
@@ -183,10 +182,9 @@ class SwaggerController extends Controller
         }
 
         .badge-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: var(--primary);
             color: white;
             border: none;
-            box-shadow: 0 4px 14px var(--primary-glow);
         }
 
         /* Auth Button */
@@ -224,25 +222,12 @@ class SwaggerController extends Controller
 
         /* Hero Section */
         .hero-section {
-            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 100%);
+            background: var(--bg-card);
             padding: 48px 32px;
             text-align: center;
             border-bottom: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-            opacity: 0.3;
-            pointer-events: none;
         }
 
         .hero-content {
@@ -261,10 +246,7 @@ class SwaggerController extends Controller
         }
 
         .hero-title span {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary);
         }
 
         .hero-description {
@@ -561,14 +543,14 @@ class SwaggerController extends Controller
             font-size: 18px !important;
             border: none !important;
             padding: 20px 24px !important;
-            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-card) 100%) !important;
+            background: var(--bg-elevated) !important;
             border-bottom: 1px solid var(--border-color) !important;
             transition: all 0.2s;
             margin: 0 !important;
         }
 
         .swagger-ui .opblock-tag:hover {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, var(--bg-card) 100%) !important;
+            background: rgba(16, 185, 129, 0.1) !important;
         }
 
         .swagger-ui .opblock-tag svg {
@@ -599,7 +581,7 @@ class SwaggerController extends Controller
             background: var(--bg-elevated) !important;
             border: 1px solid var(--border-color) !important;
             border-radius: 10px !important;
-            margin-bottom: 8px !important;
+            margin-bottom: 10px !important;
             box-shadow: none !important;
             overflow: hidden;
             transition: all 0.2s;
@@ -650,23 +632,23 @@ class SwaggerController extends Controller
 
         .swagger-ui .opblock.opblock-get {
             border-left: 3px solid var(--get) !important;
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, var(--bg-elevated) 100%) !important;
+            background: var(--bg-elevated) !important;
         }
         .swagger-ui .opblock.opblock-post {
             border-left: 3px solid var(--post) !important;
-            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, var(--bg-elevated) 100%) !important;
+            background: var(--bg-elevated) !important;
         }
         .swagger-ui .opblock.opblock-put {
             border-left: 3px solid var(--put) !important;
-            background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, var(--bg-elevated) 100%) !important;
+            background: var(--bg-elevated) !important;
         }
         .swagger-ui .opblock.opblock-delete {
             border-left: 3px solid var(--delete) !important;
-            background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, var(--bg-elevated) 100%) !important;
+            background: var(--bg-elevated) !important;
         }
         .swagger-ui .opblock.opblock-patch {
             border-left: 3px solid var(--patch) !important;
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.05) 0%, var(--bg-elevated) 100%) !important;
+            background: var(--bg-elevated) !important;
         }
 
         .swagger-ui .opblock .opblock-summary-path {
@@ -867,7 +849,7 @@ class SwaggerController extends Controller
             color: var(--primary-light) !important;
         }
 
-        /* Models Section */
+        /* Models/Schemas Section */
         .swagger-ui section.models {
             border: 1px solid var(--border-color) !important;
             border-radius: 16px !important;
@@ -882,7 +864,7 @@ class SwaggerController extends Controller
             font-size: 18px !important;
             font-weight: 700 !important;
             padding: 20px 24px !important;
-            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-card) 100%) !important;
+            background: var(--bg-elevated) !important;
             border-bottom: 1px solid var(--border-color) !important;
             margin: 0 !important;
         }
@@ -891,35 +873,112 @@ class SwaggerController extends Controller
             fill: var(--primary) !important;
         }
 
+        .swagger-ui section.models .models-control {
+            background: var(--bg-card) !important;
+        }
+
         .swagger-ui .model-container {
             background: var(--bg-elevated) !important;
-            border-radius: 10px;
-            margin: 8px 16px !important;
+            border-radius: 12px !important;
+            margin: 16px !important;
             border: 1px solid var(--border-color) !important;
+            overflow: hidden;
         }
 
         .swagger-ui .model-box {
             background: var(--bg-elevated) !important;
+            padding: 20px !important;
         }
 
         .swagger-ui .model {
             color: var(--text-secondary) !important;
             font-family: 'JetBrains Mono', monospace !important;
-            font-size: 12px !important;
+            font-size: 13px !important;
+            line-height: 1.8 !important;
         }
 
         .swagger-ui .model-title {
             color: var(--text-primary) !important;
             font-family: 'Inter', sans-serif !important;
             font-weight: 600 !important;
+            font-size: 15px !important;
+            padding: 16px 20px !important;
+            background: var(--bg-elevated) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            margin: 0 !important;
+            display: block !important;
+        }
+
+        .swagger-ui .model-title__text {
+            color: var(--primary-light) !important;
+            font-weight: 600 !important;
         }
 
         .swagger-ui .prop-type {
             color: var(--primary-light) !important;
+            font-weight: 500 !important;
         }
 
         .swagger-ui .prop-format {
             color: var(--text-muted) !important;
+            font-style: italic !important;
+        }
+
+        /* Schema property rows */
+        .swagger-ui .model .property {
+            padding: 8px 0 !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
+        }
+
+        .swagger-ui .model .property:last-child {
+            border-bottom: none !important;
+        }
+
+        .swagger-ui .model .property-name {
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+
+        /* Schema expand/collapse button */
+        .swagger-ui .model-toggle {
+            background: var(--bg-input) !important;
+            border-radius: 4px !important;
+            padding: 2px 6px !important;
+        }
+
+        .swagger-ui .model-toggle::after {
+            color: var(--primary) !important;
+        }
+
+        /* Inner braces styling */
+        .swagger-ui .model .brace-open,
+        .swagger-ui .model .brace-close {
+            color: var(--text-muted) !important;
+        }
+
+        .swagger-ui .model .inner-object {
+            padding-left: 20px !important;
+            border-left: 2px solid var(--border-color) !important;
+            margin-left: 8px !important;
+        }
+
+        /* Example values */
+        .swagger-ui .model .model-example {
+            background: var(--bg-input) !important;
+            border-radius: 6px !important;
+            padding: 12px !important;
+            margin-top: 8px !important;
+        }
+
+        .swagger-ui span.model-example-value,
+        .swagger-ui .example {
+            color: var(--primary-light) !important;
+            font-style: italic !important;
+        }
+
+        /* Required star */
+        .swagger-ui .model .star {
+            color: var(--danger) !important;
         }
 
         /* Tabs */
