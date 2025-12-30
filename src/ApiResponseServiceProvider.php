@@ -2,8 +2,12 @@
 
 namespace Stackmasteraliza\ApiResponse;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Testing\TestResponse;
+use Stackmasteraliza\ApiResponse\Console\GenerateApiDocsCommand;
+use Stackmasteraliza\ApiResponse\Http\Controllers\SwaggerController;
+use Stackmasteraliza\ApiResponse\OpenApi\OpenApiGenerator;
 use Stackmasteraliza\ApiResponse\Testing\ApiResponseAssertions;
 
 class ApiResponseServiceProvider extends ServiceProvider
@@ -21,6 +25,10 @@ class ApiResponseServiceProvider extends ServiceProvider
         $this->app->singleton('api-response', function ($app) {
             return new ApiResponse();
         });
+
+        $this->app->singleton(OpenApiGenerator::class, function ($app) {
+            return new OpenApiGenerator($app['router']);
+        });
     }
 
     /**
@@ -33,8 +41,32 @@ class ApiResponseServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/api-response.php' => config_path('api-response.php'),
             ], 'api-response-config');
 
+            $this->commands([
+                GenerateApiDocsCommand::class,
+            ]);
+
             $this->registerTestingMacros();
         }
+
+        $this->registerOpenApiRoutes();
+    }
+
+    /**
+     * Register the OpenAPI documentation routes.
+     */
+    protected function registerOpenApiRoutes(): void
+    {
+        if (! config('api-response.openapi.enabled', true)) {
+            return;
+        }
+
+        $docsRoute = config('api-response.openapi.docs_route', 'api-docs');
+
+        Route::get($docsRoute, [SwaggerController::class, 'index'])
+            ->name('api-docs.index');
+
+        Route::get($docsRoute . '/openapi.json', [SwaggerController::class, 'spec'])
+            ->name('api-docs.spec');
     }
 
     /**

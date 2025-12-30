@@ -40,6 +40,51 @@ php artisan db:seed --class=UserSeeder
 php artisan serve
 ```
 
+### 6. View API Documentation
+
+Visit `http://localhost:8000/api-docs` to see the auto-generated Swagger documentation!
+
+---
+
+## Auto-Generated Swagger Documentation
+
+The package automatically generates OpenAPI/Swagger documentation from your routes. No additional coding required!
+
+### View Documentation
+
+Simply visit `/api-docs` in your browser to see the interactive Swagger UI.
+
+### Generate Static File
+
+```bash
+php artisan api:docs
+```
+
+This creates `public/api-docs/openapi.json` that you can use with any OpenAPI-compatible tool.
+
+### Using PHP Attributes (Optional)
+
+For more detailed documentation, add attributes to your controller methods:
+
+```php
+use Stackmasteraliza\ApiResponse\Attributes\ApiEndpoint;
+use Stackmasteraliza\ApiResponse\Attributes\ApiRequest;
+use Stackmasteraliza\ApiResponse\Attributes\ApiRequestBody;
+use Stackmasteraliza\ApiResponse\Attributes\ApiResponse;
+
+#[ApiEndpoint(
+    summary: 'Get a single user',
+    description: 'Retrieve a single user by ID',
+    tags: ['Users']
+)]
+#[ApiResponse(status: 200, description: 'User retrieved successfully')]
+#[ApiResponse(status: 404, description: 'User not found', ref: 'ErrorResponse')]
+public function show(int $id): JsonResponse
+{
+    // ...
+}
+```
+
 ---
 
 ## Demo Endpoints
@@ -82,16 +127,18 @@ php artisan serve
 For your demo video, show these in order:
 
 1. **Installation** - `composer require stackmasteraliza/laravel-api-response`
-2. **Basic Success** - Hit `/api/demo/success`
-3. **Pagination Magic** - Hit `/api/demo/users-paginated` (show auto meta!)
-4. **Error Handling** - Hit `/api/demo/not-found` and `/api/demo/validate`
-5. **Custom Data** - Hit `/api/demo/custom-data`
+2. **Swagger Docs** - Visit `/api-docs` (auto-generated!)
+3. **Basic Success** - Hit `/api/demo/success`
+4. **Pagination Magic** - Hit `/api/demo/users-paginated` (show auto meta!)
+5. **Error Handling** - Hit `/api/demo/not-found` and `/api/demo/validate`
+6. **Custom Data** - Hit `/api/demo/custom-data`
 
 ## Sample Responses
 
 ### Success Response
 ```json
 {
+    "status_code": 200,
     "success": true,
     "message": "User retrieved successfully",
     "data": {
@@ -106,6 +153,7 @@ For your demo video, show these in order:
 ### Paginated Response
 ```json
 {
+    "status_code": 200,
     "success": true,
     "message": "Users retrieved with pagination",
     "data": [...],
@@ -123,6 +171,7 @@ For your demo video, show these in order:
 ### Validation Error Response
 ```json
 {
+    "status_code": 422,
     "success": false,
     "message": "Validation failed",
     "errors": {

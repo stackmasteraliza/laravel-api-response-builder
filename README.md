@@ -9,6 +9,7 @@ A clean and consistent API response builder for Laravel applications. This packa
 - Fluent interface for building responses
 - Built-in methods for common HTTP status codes
 - Automatic pagination metadata (including cursor pagination)
+- **Auto-generated OpenAPI/Swagger documentation**
 - Response macros for custom response types
 - Testing helpers for API assertions
 - Exception handler for consistent error responses
@@ -345,6 +346,110 @@ class UserControllerTest extends TestCase
 | `assertApiPaginated()` | Assert response has pagination meta |
 | `assertApiCursorPaginated()` | Assert response has cursor pagination meta |
 | `assertApiHasErrors($key)` | Assert errors exist (optionally check for specific key) |
+
+## OpenAPI/Swagger Documentation
+
+The package automatically generates OpenAPI 3.0 documentation from your API routes - **no additional coding required!**
+
+### View Documentation
+
+Simply visit `/api-docs` in your browser to see the interactive Swagger UI:
+
+```
+http://your-app.com/api-docs
+```
+
+### Generate Static File
+
+Generate a static OpenAPI JSON file:
+
+```bash
+php artisan api:docs
+```
+
+This creates `public/api-docs/openapi.json` that you can use with any OpenAPI-compatible tool.
+
+### Enhanced Documentation with Attributes
+
+For more detailed documentation, add PHP attributes to your controller methods:
+
+```php
+use Stackmasteraliza\ApiResponse\Attributes\ApiEndpoint;
+use Stackmasteraliza\ApiResponse\Attributes\ApiRequest;
+use Stackmasteraliza\ApiResponse\Attributes\ApiRequestBody;
+use Stackmasteraliza\ApiResponse\Attributes\ApiResponse;
+
+class UserController extends Controller
+{
+    #[ApiEndpoint(
+        summary: 'List all users',
+        description: 'Retrieve a paginated list of all users in the system',
+        tags: ['Users']
+    )]
+    #[ApiRequest(name: 'page', type: 'integer', in: 'query', description: 'Page number')]
+    #[ApiRequest(name: 'per_page', type: 'integer', in: 'query', description: 'Items per page')]
+    #[ApiResponse(status: 200, description: 'Users retrieved successfully', ref: 'PaginatedResponse')]
+    public function index(): JsonResponse
+    {
+        return ApiResponse::success(User::paginate(15));
+    }
+
+    #[ApiEndpoint(
+        summary: 'Create a new user',
+        description: 'Create a new user in the system',
+        tags: ['Users']
+    )]
+    #[ApiRequestBody(
+        properties: ['name' => 'string', 'email' => 'string', 'password' => 'string'],
+        required: ['name', 'email', 'password'],
+        example: ['name' => 'John Doe', 'email' => 'john@example.com', 'password' => 'secret']
+    )]
+    #[ApiResponse(status: 201, description: 'User created successfully')]
+    #[ApiResponse(status: 422, description: 'Validation error', ref: 'ValidationErrorResponse')]
+    public function store(Request $request): JsonResponse
+    {
+        $user = User::create($request->validated());
+        return ApiResponse::created($user);
+    }
+}
+```
+
+### Available Attributes
+
+| Attribute | Target | Description |
+|-----------|--------|-------------|
+| `#[ApiEndpoint]` | Method | Define summary, description, tags, deprecated status |
+| `#[ApiRequest]` | Method | Define query/path parameters |
+| `#[ApiRequestBody]` | Method | Define request body schema |
+| `#[ApiResponse]` | Method | Define response status, description, example |
+
+### Built-in Schema References
+
+Use these in `#[ApiResponse(ref: '...')]`:
+
+- `SuccessResponse` - Standard success response
+- `ErrorResponse` - Standard error response
+- `PaginatedResponse` - Paginated list response
+- `ValidationErrorResponse` - Validation error with field errors
+
+### OpenAPI Configuration
+
+```php
+// config/api-response.php
+
+'openapi' => [
+    'enabled' => env('API_DOCS_ENABLED', true),
+    'title' => env('API_DOCS_TITLE', 'API Documentation'),
+    'description' => 'Auto-generated API documentation',
+    'version' => '1.0.0',
+    'route_prefix' => 'api',
+    'docs_route' => 'api-docs',
+    'theme_color' => '#3b82f6',
+    'servers' => [
+        ['url' => env('APP_URL'), 'description' => 'API Server'],
+    ],
+],
+```
 
 ## Configuration
 
