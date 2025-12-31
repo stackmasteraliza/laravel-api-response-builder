@@ -1991,9 +1991,9 @@ class SwaggerController extends Controller
         function getSchemaExample(schema, spec, visited = new Set()) {
             if (!schema) return {};
 
-            // Handle $ref
-            if (schema['$ref']) {
-                const refPath = schema['$ref'].replace('#/components/schemas/', '');
+            // Handle \$ref
+            if (schema['\$ref']) {
+                const refPath = schema['\$ref'].replace('#/components/schemas/', '');
                 if (visited.has(refPath)) return {};
                 visited.add(refPath);
                 const refSchema = spec.components?.schemas?.[refPath];
