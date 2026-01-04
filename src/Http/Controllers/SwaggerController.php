@@ -347,14 +347,16 @@ class SwaggerController extends Controller
         }
 
         .version-menu-header {
-            padding: 12px 16px;
-            background: var(--bg-elevated);
-            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px 8px;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
+        }
+
+        .version-menu-list {
+            padding: 0 8px 8px;
         }
 
         .version-menu-item {
@@ -362,9 +364,10 @@ class SwaggerController extends Controller
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 12px;
             background: transparent;
             border: none;
+            border-radius: 8px;
             color: var(--text-primary);
             font-family: 'Inter', sans-serif;
             font-size: 13px;
@@ -375,7 +378,7 @@ class SwaggerController extends Controller
         }
 
         .version-menu-item:hover {
-            background: rgba(16, 185, 129, 0.1);
+            background: var(--bg-elevated);
         }
 
         .version-menu-item:hover .version-title {
@@ -387,8 +390,7 @@ class SwaggerController extends Controller
         }
 
         .version-menu-item.active {
-            background: rgba(16, 185, 129, 0.2);
-            border-left: 3px solid var(--primary);
+            background: rgba(16, 185, 129, 0.15);
         }
 
         .version-menu-item.active .version-title {
@@ -505,7 +507,7 @@ class SwaggerController extends Controller
         .ws-modal-header h3 svg {
             width: 24px;
             height: 24px;
-            color: var(--info);
+            color: var(--primary);
         }
 
         .ws-close-btn {
@@ -1894,7 +1896,7 @@ class SwaggerController extends Controller
                     </button>
                     <div class="version-menu" id="version-menu">
                         <div class="version-menu-header">Select API Version</div>
-                        <div id="version-list">
+                        <div class="version-menu-list" id="version-list">
                             <!-- Versions will be populated by JavaScript -->
                         </div>
                     </div>
