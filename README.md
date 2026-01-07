@@ -403,7 +403,7 @@ http://your-app.com/api-docs
 
 The package includes a beautifully designed custom Swagger UI with:
 
-- **Modern Dark Theme** - Clean black background with customizable accent color
+- **Theme Support** - Dark, Light, and Auto (system preference) themes with toggle button
 - **Custom Branding** - Display your app name and logo in the header
 - **Hero Section** - Welcome message with live API statistics (endpoints, categories, schemas)
 - **Search Bar** - Filter APIs by path, method, or description
@@ -447,6 +447,9 @@ API_DOCS_APP_LOGO=https://example.com/logo.png
 # Theme color (default: #10b981 - green)
 API_DOCS_THEME_COLOR=#10b981
 
+# Default theme: dark, light, or auto (default: auto)
+API_DOCS_DEFAULT_THEME=auto
+
 # Enable/disable documentation
 API_DOCS_ENABLED=true
 ```
@@ -468,6 +471,7 @@ Or in your config file:
     'app_name' => env('API_DOCS_APP_NAME', env('APP_NAME', 'API')),
     'app_logo' => env('API_DOCS_APP_LOGO', null),
     'theme_color' => env('API_DOCS_THEME_COLOR', '#10b981'),
+    'default_theme' => env('API_DOCS_DEFAULT_THEME', 'auto'), // dark, light, auto
 
     'servers' => [
         ['url' => env('APP_URL'), 'description' => 'API Server'],

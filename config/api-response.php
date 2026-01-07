@@ -40,6 +40,7 @@ return [
         'route_prefix' => 'api',
         'docs_route' => 'api-docs',
         'theme_color' => env('API_DOCS_THEME_COLOR', '#10b981'),
+        'default_theme' => env('API_DOCS_DEFAULT_THEME', 'auto'),
 
         'servers' => [
             [

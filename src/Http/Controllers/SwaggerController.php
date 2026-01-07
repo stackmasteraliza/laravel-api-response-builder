@@ -90,6 +90,18 @@ class SwaggerController extends Controller
             ? "<img src=\"{$appLogo}\" alt=\"{$appName}\" class=\"app-logo\">"
             : "<div class=\"app-logo-placeholder\">" . strtoupper(substr($appName, 0, 2)) . "</div>";
 
+        // Convert hex to RGB for dynamic color variations
+        $rgb = $this->hexToRgb($themeColor);
+        $primaryRgb = "{$rgb['r']}, {$rgb['g']}, {$rgb['b']}";
+
+        // Generate lighter version of primary color (for dark mode)
+        $lighterRgb = $this->lightenColor($rgb, 0.3);
+        $primaryLight = "rgb({$lighterRgb['r']}, {$lighterRgb['g']}, {$lighterRgb['b']})";
+
+        // Generate darker version of primary color (for light mode)
+        $darkerRgb = $this->darkenColor($rgb, 0.15);
+        $primaryDark = "rgb({$darkerRgb['r']}, {$darkerRgb['g']}, {$darkerRgb['b']})";
+
         return <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -104,18 +116,9 @@ class SwaggerController extends Controller
     <style>
         :root {
             --primary: {$themeColor};
-            --primary-dark: #059669;
-            --primary-light: #34d399;
-            --primary-glow: rgba(16, 185, 129, 0.4);
-            --bg-dark: #000000;
-            --bg-card: #0d0d0d;
-            --bg-elevated: #141414;
-            --bg-input: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #71717a;
-            --text-muted: #52525b;
-            --border-color: #27272a;
-            --border-subtle: #1f1f23;
+            --primary-rgb: {$primaryRgb};
+            --primary-light: {$primaryLight};
+            --primary-glow: rgba({$primaryRgb}, 0.4);
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
@@ -125,6 +128,182 @@ class SwaggerController extends Controller
             --put: #f59e0b;
             --delete: #ef4444;
             --patch: #8b5cf6;
+        }
+
+        /* Dark Theme (default) */
+        [data-theme="dark"] {
+            --bg-dark: #000000;
+            --bg-card: #0d0d0d;
+            --bg-elevated: #141414;
+            --bg-input: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #71717a;
+            --text-muted: #52525b;
+            --border-color: #27272a;
+            --border-subtle: #1f1f23;
+            --primary-hover: rgba({$primaryRgb}, 0.08);
+            --code-bg: #0d0d0d;
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-dark: #ffffff;
+            --bg-card: #f8fafc;
+            --bg-elevated: #f1f5f9;
+            --bg-input: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --border-subtle: #f1f5f9;
+            --primary-hover: rgba({$primaryRgb}, 0.12);
+            --primary-light: {$primaryDark};
+            --code-bg: #f1f5f9;
+        }
+
+        /* Light theme code block overrides - keep dark background with white text */
+        [data-theme="light"] .swagger-ui .highlight-code,
+        [data-theme="light"] .swagger-ui pre,
+        [data-theme="light"] .swagger-ui .highlight-code pre {
+            background: #1e293b !important;
+            background-color: #1e293b !important;
+        }
+
+        [data-theme="light"] .swagger-ui .microlight,
+        [data-theme="light"] .swagger-ui code.microlight,
+        [data-theme="light"] .swagger-ui pre.microlight {
+            background: transparent !important;
+            background-color: transparent !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="light"] .swagger-ui .microlight span,
+        [data-theme="light"] .swagger-ui .microlight * {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        [data-theme="light"] .swagger-ui .microlight span[style],
+        [data-theme="light"] .swagger-ui .microlight *[style] {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        /* Code blocks always have dark backgrounds - need light text in both themes */
+        /* Default: muted gray for punctuation/brackets */
+        [data-theme="light"] .swagger-ui .highlight-code .microlight span,
+        [data-theme="light"] .swagger-ui .example .microlight span,
+        [data-theme="light"] .swagger-ui .example-value .microlight span,
+        [data-theme="light"] .swagger-ui pre.microlight span,
+        [data-theme="light"] .swagger-ui pre.example span,
+        [data-theme="light"] .swagger-ui pre.example code span {
+            color: #94a3b8 !important;
+        }
+
+        [data-theme="light"] .swagger-ui code.language-json span {
+            color: #cbd5e1 !important;
+        }
+
+        /* Property names (keys) - green */
+        [data-theme="light"] .swagger-ui .highlight-code .hljs-attr,
+        [data-theme="light"] .swagger-ui .example .hljs-attr,
+        [data-theme="light"] .swagger-ui pre.example .hljs-attr,
+        [data-theme="light"] .swagger-ui code.language-json .hljs-attr {
+            color: #10b981 !important;
+        }
+
+        /* String values - green */
+        [data-theme="light"] .swagger-ui .highlight-code .hljs-string,
+        [data-theme="light"] .swagger-ui .example .hljs-string,
+        [data-theme="light"] .swagger-ui pre.example .hljs-string,
+        [data-theme="light"] .swagger-ui code.language-json .hljs-string {
+            color: #10b981 !important;
+        }
+
+        /* Numbers - blue */
+        [data-theme="light"] .swagger-ui .highlight-code .hljs-number,
+        [data-theme="light"] .swagger-ui .example .hljs-number,
+        [data-theme="light"] .swagger-ui pre.example .hljs-number,
+        [data-theme="light"] .swagger-ui code.language-json .hljs-number {
+            color: #3b82f6 !important;
+        }
+
+        /* Booleans and literals (true, false, null) - blue */
+        [data-theme="light"] .swagger-ui .highlight-code .hljs-literal,
+        [data-theme="light"] .swagger-ui .example .hljs-literal,
+        [data-theme="light"] .swagger-ui pre.example .hljs-literal,
+        [data-theme="light"] .swagger-ui code.language-json .hljs-literal {
+            color: #3b82f6 !important;
+        }
+
+        /* Keep dark background for code blocks in light theme */
+        [data-theme="light"] .swagger-ui .example-value,
+        [data-theme="light"] .swagger-ui .example,
+        [data-theme="light"] .swagger-ui .model-example-value {
+            background: #1e293b !important;
+            background-color: #1e293b !important;
+        }
+
+        [data-theme="light"] .swagger-ui .response-col_description__inner {
+            color: #0f172a !important;
+        }
+
+        /* Light theme response text overrides */
+        [data-theme="light"] .swagger-ui .response-col_description,
+        [data-theme="light"] .swagger-ui .response-col_description p,
+        [data-theme="light"] .swagger-ui .response-col_description span,
+        [data-theme="light"] .swagger-ui .response-col_description__inner p,
+        [data-theme="light"] .swagger-ui table.responses-table,
+        [data-theme="light"] .swagger-ui table.responses-table td {
+            color: #0f172a !important;
+        }
+
+        [data-theme="light"] .swagger-ui .response-col_links,
+        [data-theme="light"] .swagger-ui .response-col_links i,
+        [data-theme="light"] .swagger-ui .response-col_links .response-undocumented {
+            color: #475569 !important;
+        }
+
+        /* Light theme schemas/models section */
+        [data-theme="light"] .swagger-ui section.models h4,
+        [data-theme="light"] .swagger-ui section.models h4 span {
+            color: #0f172a !important;
+        }
+
+        [data-theme="light"] .swagger-ui .model-title,
+        [data-theme="light"] .swagger-ui .model-title span {
+            color: #0f172a !important;
+        }
+
+        [data-theme="light"] .swagger-ui .model,
+        [data-theme="light"] .swagger-ui .model span {
+            color: #475569 !important;
+        }
+
+        /* Light theme model arrows and toggles */
+        [data-theme="light"] .swagger-ui .model-toggle::after,
+        [data-theme="light"] .swagger-ui .model-toggle {
+            color: #475569 !important;
+        }
+
+        [data-theme="light"] .swagger-ui .model-toggle:hover::after {
+            color: var(--primary) !important;
+        }
+
+        [data-theme="light"] .swagger-ui .model .brace-open,
+        [data-theme="light"] .swagger-ui .model .brace-close,
+        [data-theme="light"] .swagger-ui .model .punctuation {
+            color: #64748b !important;
+        }
+
+        [data-theme="light"] .swagger-ui .expand-operation svg,
+        [data-theme="light"] .swagger-ui .model svg,
+        [data-theme="light"] .swagger-ui .models svg {
+            fill: #475569 !important;
+        }
+
+        [data-theme="light"] .swagger-ui .model-box-control svg {
+            fill: #475569 !important;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -252,12 +431,12 @@ class SwaggerController extends Controller
 
         .auth-btn:hover {
             border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(var(--primary-rgb), 0.1);
         }
 
         .auth-btn.authorized {
             border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.15);
+            background: rgba(var(--primary-rgb), 0.15);
             color: var(--primary-light);
         }
 
@@ -294,7 +473,7 @@ class SwaggerController extends Controller
 
         .version-btn:hover {
             border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(var(--primary-rgb), 0.1);
         }
 
         .version-btn svg {
@@ -413,6 +592,44 @@ class SwaggerController extends Controller
             opacity: 1;
         }
 
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.1);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .theme-toggle .icon-sun,
+        .theme-toggle .icon-moon {
+            display: none;
+        }
+
+        .theme-toggle[data-mode="dark"] .icon-sun {
+            display: block;
+        }
+
+        .theme-toggle[data-mode="light"] .icon-moon {
+            display: block;
+        }
+
         /* WebSocket Tester */
         .ws-btn {
             display: flex;
@@ -432,7 +649,7 @@ class SwaggerController extends Controller
 
         .ws-btn:hover {
             border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(var(--primary-rgb), 0.1);
         }
 
         .ws-btn svg {
@@ -442,7 +659,7 @@ class SwaggerController extends Controller
 
         .ws-btn.connected {
             border-color: var(--success);
-            background: rgba(16, 185, 129, 0.15);
+            background: rgba(var(--primary-rgb), 0.15);
             color: var(--success);
         }
 
@@ -578,7 +795,7 @@ class SwaggerController extends Controller
         }
 
         .ws-status.connected {
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(var(--primary-rgb), 0.1);
             color: var(--success);
         }
 
@@ -682,7 +899,7 @@ class SwaggerController extends Controller
         }
 
         .ws-message.received {
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(var(--primary-rgb), 0.1);
             border-left: 3px solid var(--success);
         }
 
@@ -739,7 +956,7 @@ class SwaggerController extends Controller
         .ws-preset-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
-            background: transparent;
+            background: rgba(var(--primary-rgb), 0.1);
         }
 
         /* Export Dropdown */
@@ -765,7 +982,7 @@ class SwaggerController extends Controller
 
         .export-btn:hover {
             border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(var(--primary-rgb), 0.1);
         }
 
         .export-btn svg {
@@ -1120,12 +1337,13 @@ class SwaggerController extends Controller
 
         .auth-type-btn:hover {
             border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.1);
         }
 
         .auth-type-btn.active {
             background: transparent;
             border-color: var(--primary);
-            color: white;
+            color: var(--primary);
         }
 
         .auth-input-group {
@@ -1194,7 +1412,7 @@ class SwaggerController extends Controller
         }
 
         .auth-modal-btn-primary:hover {
-            background: var(--primary-dark);
+            filter: brightness(0.9);
             transform: translateY(-1px);
         }
 
@@ -1262,7 +1480,7 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .opblock-tag:hover {
-            background: rgba(16, 185, 129, 0.1) !important;
+            background: var(--primary-hover) !important;
         }
 
         .swagger-ui .opblock-tag svg {
@@ -1301,7 +1519,7 @@ class SwaggerController extends Controller
 
         .swagger-ui .opblock:hover {
             border-color: var(--primary) !important;
-            box-shadow: 0 0 0 1px var(--primary), 0 4px 12px rgba(16, 185, 129, 0.15) !important;
+            background: var(--primary-hover) !important;
         }
 
         .swagger-ui .opblock:last-child {
@@ -1495,7 +1713,7 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .btn.execute:hover {
-            background: var(--primary-dark) !important;
+            filter: brightness(0.9) !important;
             border: none !important;
             transform: translateY(-2px);
             box-shadow: none !important;
@@ -1534,7 +1752,31 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .response-col_description {
+            color: var(--text-primary) !important;
+        }
+
+        .swagger-ui .response-col_description p,
+        .swagger-ui .response-col_description span,
+        .swagger-ui .response-col_description__inner,
+        .swagger-ui .response-col_description__inner p {
+            color: var(--text-primary) !important;
+        }
+
+        .swagger-ui .response-col_links {
             color: var(--text-secondary) !important;
+        }
+
+        .swagger-ui .response-col_links .response-undocumented,
+        .swagger-ui .response-col_links i {
+            color: var(--text-muted) !important;
+        }
+
+        .swagger-ui table.responses-table {
+            color: var(--text-primary) !important;
+        }
+
+        .swagger-ui table.responses-table td {
+            color: var(--text-primary) !important;
         }
 
         .swagger-ui .response code {
@@ -1547,9 +1789,8 @@ class SwaggerController extends Controller
 
         /* Code Blocks */
         .swagger-ui .highlight-code,
-        .swagger-ui .microlight,
         .swagger-ui pre {
-            background: var(--bg-input) !important;
+            background: var(--code-bg) !important;
             border-radius: 8px !important;
             border: 1px solid var(--border-color) !important;
             font-family: 'JetBrains Mono', monospace !important;
@@ -1558,7 +1799,122 @@ class SwaggerController extends Controller
         }
 
         .swagger-ui .microlight {
-            color: var(--primary-light) !important;
+            background: transparent !important;
+            color: var(--text-primary) !important;
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        .swagger-ui .highlight-code > .microlight,
+        .swagger-ui pre > .microlight {
+            background: transparent !important;
+        }
+
+        /* Response example code blocks */
+        .swagger-ui .example-value,
+        .swagger-ui .response-col_description__inner .highlight-code {
+            background: var(--code-bg) !important;
+        }
+
+        .swagger-ui .example-value .microlight,
+        .swagger-ui .model-example .microlight {
+            background: transparent !important;
+            color: #94a3b8 !important; /* Muted gray for base text/brackets */
+        }
+
+        /* Ensure all code spans inside microlight are transparent and have proper colors */
+        .swagger-ui .microlight span {
+            background: transparent !important;
+        }
+
+        /* JSON syntax highlighting - all elements in code blocks need light text on dark bg */
+        /* Base color for containers (affects text nodes like closing brackets) */
+        .swagger-ui .highlight-code .microlight,
+        .swagger-ui .example .microlight,
+        .swagger-ui .example-value .microlight,
+        .swagger-ui pre.microlight,
+        .swagger-ui pre.example,
+        .swagger-ui pre.example code {
+            background: transparent !important;
+            color: #94a3b8 !important; /* Default: muted gray for punctuation/brackets */
+        }
+
+        .swagger-ui code.language-json {
+            background: transparent !important;
+            color: #cbd5e1 !important; /* Lighter gray for language-json */
+        }
+
+        /* All spans in code blocks - transparent background */
+        .swagger-ui .highlight-code .microlight span,
+        .swagger-ui .example .microlight span,
+        .swagger-ui .example-value .microlight span,
+        .swagger-ui pre.microlight span,
+        .swagger-ui pre.example span,
+        .swagger-ui pre.example code span,
+        .swagger-ui code.language-json span,
+        .swagger-ui .highlight-code span,
+        .swagger-ui pre.example *,
+        .swagger-ui code.language-json * {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        /* Text colors for spans */
+        .swagger-ui .highlight-code .microlight span,
+        .swagger-ui .example .microlight span,
+        .swagger-ui .example-value .microlight span,
+        .swagger-ui pre.microlight span,
+        .swagger-ui pre.example span,
+        .swagger-ui pre.example code span {
+            color: #94a3b8 !important; /* Default: muted gray for punctuation/brackets */
+        }
+
+        .swagger-ui code.language-json span {
+            color: #cbd5e1 !important; /* Lighter gray for language-json */
+        }
+
+        /* Property names (keys) - green */
+        .swagger-ui .highlight-code .microlight .hljs-attr,
+        .swagger-ui .example .microlight .hljs-attr,
+        .swagger-ui pre.example .hljs-attr,
+        .swagger-ui code.language-json .hljs-attr {
+            background: transparent !important;
+            color: #10b981 !important;
+        }
+
+        /* String values - green */
+        .swagger-ui .highlight-code .microlight .hljs-string,
+        .swagger-ui .example .microlight .hljs-string,
+        .swagger-ui pre.example .hljs-string,
+        .swagger-ui code.language-json .hljs-string {
+            background: transparent !important;
+            color: #10b981 !important;
+        }
+
+        /* Numbers - blue */
+        .swagger-ui .highlight-code .microlight .hljs-number,
+        .swagger-ui .example .microlight .hljs-number,
+        .swagger-ui pre.example .hljs-number,
+        .swagger-ui code.language-json .hljs-number {
+            background: transparent !important;
+            color: #3b82f6 !important;
+        }
+
+        /* Booleans and literals (true, false, null) - blue */
+        .swagger-ui .highlight-code .microlight .hljs-literal,
+        .swagger-ui .example .microlight .hljs-literal,
+        .swagger-ui pre.example .hljs-literal,
+        .swagger-ui code.language-json .hljs-literal {
+            background: transparent !important;
+            color: #3b82f6 !important;
+        }
+
+        /* Response body content */
+        .swagger-ui .response-col_description__inner pre,
+        .swagger-ui .response-col_description__inner code,
+        .swagger-ui .model pre,
+        .swagger-ui .model code {
+            background: var(--code-bg) !important;
+            color: var(--text-primary) !important;
         }
 
         /* Models/Schemas Section */
@@ -1652,7 +2008,7 @@ class SwaggerController extends Controller
             color: var(--primary) !important;
             font-weight: 500 !important;
             font-size: 12px !important;
-            background: rgba(16, 185, 129, 0.1) !important;
+            background: rgba(var(--primary-rgb), 0.1) !important;
             padding: 2px 6px !important;
             border-radius: 4px !important;
             margin-left: 8px !important;
@@ -1954,6 +2310,14 @@ class SwaggerController extends Controller
                     </svg>
                     <span>WebSocket</span>
                 </button>
+                <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
                 <button class="auth-btn" id="auth-btn" onclick="openAuthModal()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -2115,13 +2479,91 @@ class SwaggerController extends Controller
         const baseSpecUrl = '{$specUrl}';
         const versionsUrl = baseSpecUrl.replace('/openapi.json', '/versions');
 
-        // Initialize auth button state and load versions
+        // Theme state - only dark and light, system theme determines initial default
+        const themes = ['dark', 'light'];
+        let currentTheme = localStorage.getItem('api_docs_theme') || getSystemTheme();
+
+        // Initialize theme, auth button state, and load versions
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
             if (authToken) {
                 updateAuthButton(true);
             }
             loadVersions();
         });
+
+        // ============================================
+        // Theme Functions
+        // ============================================
+
+        function initTheme() {
+            applyTheme(currentTheme);
+        }
+
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+
+            // Store the user preference
+            localStorage.setItem('api_docs_theme', theme);
+            currentTheme = theme;
+
+            // Update toggle button icon and title
+            const toggleBtn = document.getElementById('theme-toggle');
+            toggleBtn.setAttribute('data-mode', theme);
+            toggleBtn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+
+            // Clear inline background styles from microlight elements
+            clearMicrolightBackgrounds();
+        }
+
+        function clearMicrolightBackgrounds() {
+            // Code blocks always have dark backgrounds, so they always need light text
+            // Fix all spans inside highlight-code, example, example-value containers
+            document.querySelectorAll('.highlight-code .microlight span, .example .microlight span, .example-value .microlight span, pre.microlight span, pre.example span, pre.example code span, code.language-json span').forEach(function(el) {
+                // Clear background
+                el.style.background = 'transparent';
+                el.style.backgroundColor = 'transparent';
+
+                // Check if it has a class for syntax highlighting
+                const hasClass = el.classList.contains('hljs-attr') ||
+                                 el.classList.contains('hljs-string') ||
+                                 el.classList.contains('hljs-number') ||
+                                 el.classList.contains('hljs-literal');
+
+                if (hasClass) {
+                    // Let CSS handle colored elements
+                    el.style.removeProperty('color');
+                } else {
+                    // Plain spans (brackets, colons, commas)
+                    // Use lighter color for language-json elements
+                    const isInLanguageJson = el.closest('code.language-json');
+                    el.style.color = isInLanguageJson ? '#cbd5e1' : '#94a3b8';
+                }
+            });
+
+            // Handle the microlight/example container itself (base color for text nodes like closing brackets)
+            document.querySelectorAll('.highlight-code .microlight, .example .microlight, .example-value .microlight, pre.microlight, pre.example, pre.example code').forEach(function(el) {
+                el.style.background = 'transparent';
+                el.style.backgroundColor = 'transparent';
+                el.style.color = '#94a3b8'; // Muted gray - same as brackets
+            });
+
+            // Lighter color for language-json containers
+            document.querySelectorAll('code.language-json').forEach(function(el) {
+                el.style.background = 'transparent';
+                el.style.backgroundColor = 'transparent';
+                el.style.color = '#cbd5e1'; // Lighter gray
+            });
+        }
+
+        function toggleTheme() {
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(nextTheme);
+        }
 
         // Version Switcher Functions
         async function loadVersions() {
@@ -2240,6 +2682,18 @@ class SwaggerController extends Controller
                 },
                 onComplete: function() {
                     updateStats();
+
+                    // Clear microlight inline backgrounds after render
+                    setTimeout(clearMicrolightBackgrounds, 100);
+
+                    // Also observe for dynamically added code blocks
+                    const observer = new MutationObserver(function(mutations) {
+                        clearMicrolightBackgrounds();
+                    });
+                    observer.observe(document.getElementById('swagger-ui'), {
+                        childList: true,
+                        subtree: true
+                    });
                 }
             });
         }
@@ -2417,6 +2871,18 @@ class SwaggerController extends Controller
                             }
                         }, 500);
                     }
+
+                    // Clear microlight inline backgrounds after render
+                    setTimeout(clearMicrolightBackgrounds, 100);
+
+                    // Also observe for dynamically added code blocks
+                    const observer = new MutationObserver(function(mutations) {
+                        clearMicrolightBackgrounds();
+                    });
+                    observer.observe(document.getElementById('swagger-ui'), {
+                        childList: true,
+                        subtree: true
+                    });
                 }
             });
             window.ui = ui;
@@ -3134,5 +3600,44 @@ class SwaggerController extends Controller
 </body>
 </html>
 HTML;
+    }
+
+    /**
+     * Convert hex color to RGB array.
+     */
+    protected function hexToRgb(string $hex): array
+    {
+        $hex = ltrim($hex, '#');
+
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+
+        return [
+            'r' => hexdec(substr($hex, 0, 2)),
+            'g' => hexdec(substr($hex, 2, 2)),
+            'b' => hexdec(substr($hex, 4, 2)),
+        ];
+    }
+
+    /**
+     * Lighten a color by a given amount.
+     */
+    protected function lightenColor(array $rgb, float $amount): array
+    {
+        return [
+            'r' => min(255, (int) ($rgb['r'] + (255 - $rgb['r']) * $amount)),
+            'g' => min(255, (int) ($rgb['g'] + (255 - $rgb['g']) * $amount)),
+            'b' => min(255, (int) ($rgb['b'] + (255 - $rgb['b']) * $amount)),
+        ];
+    }
+
+    protected function darkenColor(array $rgb, float $amount): array
+    {
+        return [
+            'r' => max(0, (int) ($rgb['r'] * (1 - $amount))),
+            'g' => max(0, (int) ($rgb['g'] * (1 - $amount))),
+            'b' => max(0, (int) ($rgb['b'] * (1 - $amount))),
+        ];
     }
 }
