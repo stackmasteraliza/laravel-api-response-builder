@@ -90,15 +90,10 @@ class SwaggerController extends Controller
             ? "<img src=\"{$appLogo}\" alt=\"{$appName}\" class=\"app-logo\">"
             : "<div class=\"app-logo-placeholder\">" . strtoupper(substr($appName, 0, 2)) . "</div>";
 
-        // Convert hex to RGB for dynamic color variations
         $rgb = $this->hexToRgb($themeColor);
         $primaryRgb = "{$rgb['r']}, {$rgb['g']}, {$rgb['b']}";
-
-        // Generate lighter version of primary color (for dark mode)
         $lighterRgb = $this->lightenColor($rgb, 0.3);
         $primaryLight = "rgb({$lighterRgb['r']}, {$lighterRgb['g']}, {$lighterRgb['b']})";
-
-        // Generate darker version of primary color (for light mode)
         $darkerRgb = $this->darkenColor($rgb, 0.15);
         $primaryDark = "rgb({$darkerRgb['r']}, {$darkerRgb['g']}, {$darkerRgb['b']})";
 
@@ -204,7 +199,7 @@ class SwaggerController extends Controller
             color: #cbd5e1 !important;
         }
 
-        /* Property names (keys) - green */
+        /* Property names */
         [data-theme="light"] .swagger-ui .highlight-code .hljs-attr,
         [data-theme="light"] .swagger-ui .example .hljs-attr,
         [data-theme="light"] .swagger-ui pre.example .hljs-attr,
@@ -212,7 +207,7 @@ class SwaggerController extends Controller
             color: #10b981 !important;
         }
 
-        /* String values - green */
+        /* String values */
         [data-theme="light"] .swagger-ui .highlight-code .hljs-string,
         [data-theme="light"] .swagger-ui .example .hljs-string,
         [data-theme="light"] .swagger-ui pre.example .hljs-string,
@@ -220,7 +215,7 @@ class SwaggerController extends Controller
             color: #10b981 !important;
         }
 
-        /* Numbers - blue */
+        /* Numbers */
         [data-theme="light"] .swagger-ui .highlight-code .hljs-number,
         [data-theme="light"] .swagger-ui .example .hljs-number,
         [data-theme="light"] .swagger-ui pre.example .hljs-number,
@@ -228,7 +223,7 @@ class SwaggerController extends Controller
             color: #3b82f6 !important;
         }
 
-        /* Booleans and literals (true, false, null) - blue */
+        /* Booleans and literals */
         [data-theme="light"] .swagger-ui .highlight-code .hljs-literal,
         [data-theme="light"] .swagger-ui .example .hljs-literal,
         [data-theme="light"] .swagger-ui pre.example .hljs-literal,
@@ -1818,16 +1813,15 @@ class SwaggerController extends Controller
         .swagger-ui .example-value .microlight,
         .swagger-ui .model-example .microlight {
             background: transparent !important;
-            color: #94a3b8 !important; /* Muted gray for base text/brackets */
+            color: #94a3b8 !important;
         }
 
-        /* Ensure all code spans inside microlight are transparent and have proper colors */
+        /* Microlight spans */
         .swagger-ui .microlight span {
             background: transparent !important;
         }
 
-        /* JSON syntax highlighting - all elements in code blocks need light text on dark bg */
-        /* Base color for containers (affects text nodes like closing brackets) */
+        /* JSON syntax highlighting */
         .swagger-ui .highlight-code .microlight,
         .swagger-ui .example .microlight,
         .swagger-ui .example-value .microlight,
@@ -1835,15 +1829,15 @@ class SwaggerController extends Controller
         .swagger-ui pre.example,
         .swagger-ui pre.example code {
             background: transparent !important;
-            color: #94a3b8 !important; /* Default: muted gray for punctuation/brackets */
+            color: #94a3b8 !important;
         }
 
         .swagger-ui code.language-json {
             background: transparent !important;
-            color: #cbd5e1 !important; /* Lighter gray for language-json */
+            color: #cbd5e1 !important;
         }
 
-        /* All spans in code blocks - transparent background */
+        /* Code block spans */
         .swagger-ui .highlight-code .microlight span,
         .swagger-ui .example .microlight span,
         .swagger-ui .example-value .microlight span,
@@ -1858,21 +1852,21 @@ class SwaggerController extends Controller
             background-color: transparent !important;
         }
 
-        /* Text colors for spans */
+        /* Span text colors */
         .swagger-ui .highlight-code .microlight span,
         .swagger-ui .example .microlight span,
         .swagger-ui .example-value .microlight span,
         .swagger-ui pre.microlight span,
         .swagger-ui pre.example span,
         .swagger-ui pre.example code span {
-            color: #94a3b8 !important; /* Default: muted gray for punctuation/brackets */
+            color: #94a3b8 !important;
         }
 
         .swagger-ui code.language-json span {
-            color: #cbd5e1 !important; /* Lighter gray for language-json */
+            color: #cbd5e1 !important;
         }
 
-        /* Property names (keys) - green */
+        /* Property names */
         .swagger-ui .highlight-code .microlight .hljs-attr,
         .swagger-ui .example .microlight .hljs-attr,
         .swagger-ui pre.example .hljs-attr,
@@ -1881,7 +1875,7 @@ class SwaggerController extends Controller
             color: #10b981 !important;
         }
 
-        /* String values - green */
+        /* String values */
         .swagger-ui .highlight-code .microlight .hljs-string,
         .swagger-ui .example .microlight .hljs-string,
         .swagger-ui pre.example .hljs-string,
@@ -1890,7 +1884,7 @@ class SwaggerController extends Controller
             color: #10b981 !important;
         }
 
-        /* Numbers - blue */
+        /* Numbers */
         .swagger-ui .highlight-code .microlight .hljs-number,
         .swagger-ui .example .microlight .hljs-number,
         .swagger-ui pre.example .hljs-number,
@@ -1899,7 +1893,7 @@ class SwaggerController extends Controller
             color: #3b82f6 !important;
         }
 
-        /* Booleans and literals (true, false, null) - blue */
+        /* Booleans and literals */
         .swagger-ui .highlight-code .microlight .hljs-literal,
         .swagger-ui .example .microlight .hljs-literal,
         .swagger-ui pre.example .hljs-literal,
@@ -2473,17 +2467,14 @@ class SwaggerController extends Controller
         let authType = localStorage.getItem('api_auth_type') || 'bearer';
         let apiKeyHeader = localStorage.getItem('api_auth_header') || 'X-API-Key';
 
-        // Versioning state
         let availableVersions = [];
         let currentVersion = localStorage.getItem('api_docs_version') || null;
         const baseSpecUrl = '{$specUrl}';
         const versionsUrl = baseSpecUrl.replace('/openapi.json', '/versions');
 
-        // Theme state - only dark and light, system theme determines initial default
         const themes = ['dark', 'light'];
         let currentTheme = localStorage.getItem('api_docs_theme') || getSystemTheme();
 
-        // Initialize theme, auth button state, and load versions
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
             if (authToken) {
@@ -2491,10 +2482,6 @@ class SwaggerController extends Controller
             }
             loadVersions();
         });
-
-        // ============================================
-        // Theme Functions
-        // ============================================
 
         function initTheme() {
             applyTheme(currentTheme);
@@ -2506,57 +2493,44 @@ class SwaggerController extends Controller
 
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
-
-            // Store the user preference
             localStorage.setItem('api_docs_theme', theme);
             currentTheme = theme;
 
-            // Update toggle button icon and title
             const toggleBtn = document.getElementById('theme-toggle');
             toggleBtn.setAttribute('data-mode', theme);
             toggleBtn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
 
-            // Clear inline background styles from microlight elements
             clearMicrolightBackgrounds();
         }
 
         function clearMicrolightBackgrounds() {
-            // Code blocks always have dark backgrounds, so they always need light text
-            // Fix all spans inside highlight-code, example, example-value containers
             document.querySelectorAll('.highlight-code .microlight span, .example .microlight span, .example-value .microlight span, pre.microlight span, pre.example span, pre.example code span, code.language-json span').forEach(function(el) {
-                // Clear background
                 el.style.background = 'transparent';
                 el.style.backgroundColor = 'transparent';
 
-                // Check if it has a class for syntax highlighting
                 const hasClass = el.classList.contains('hljs-attr') ||
                                  el.classList.contains('hljs-string') ||
                                  el.classList.contains('hljs-number') ||
                                  el.classList.contains('hljs-literal');
 
                 if (hasClass) {
-                    // Let CSS handle colored elements
                     el.style.removeProperty('color');
                 } else {
-                    // Plain spans (brackets, colons, commas)
-                    // Use lighter color for language-json elements
                     const isInLanguageJson = el.closest('code.language-json');
                     el.style.color = isInLanguageJson ? '#cbd5e1' : '#94a3b8';
                 }
             });
 
-            // Handle the microlight/example container itself (base color for text nodes like closing brackets)
             document.querySelectorAll('.highlight-code .microlight, .example .microlight, .example-value .microlight, pre.microlight, pre.example, pre.example code').forEach(function(el) {
                 el.style.background = 'transparent';
                 el.style.backgroundColor = 'transparent';
-                el.style.color = '#94a3b8'; // Muted gray - same as brackets
+                el.style.color = '#94a3b8';
             });
 
-            // Lighter color for language-json containers
             document.querySelectorAll('code.language-json').forEach(function(el) {
                 el.style.background = 'transparent';
                 el.style.backgroundColor = 'transparent';
-                el.style.color = '#cbd5e1'; // Lighter gray
+                el.style.color = '#cbd5e1';
             });
         }
 
@@ -2565,7 +2539,6 @@ class SwaggerController extends Controller
             applyTheme(nextTheme);
         }
 
-        // Version Switcher Functions
         async function loadVersions() {
             try {
                 const response = await fetch(versionsUrl);
@@ -2576,7 +2549,6 @@ class SwaggerController extends Controller
                     renderVersionMenu();
                     document.getElementById('version-switcher').classList.add('visible');
 
-                    // Set default version if not already set
                     if (!currentVersion && data.default) {
                         currentVersion = data.default;
                         localStorage.setItem('api_docs_version', currentVersion);
@@ -2593,7 +2565,6 @@ class SwaggerController extends Controller
             const versionList = document.getElementById('version-list');
             let html = '';
 
-            // Add "All Versions" option
             html += '<button class="version-menu-item ' + (!currentVersion ? 'active' : '') + '" onclick="switchVersion(null)">' +
                 '<div class="version-name">' +
                     '<span class="version-title">All Versions</span>' +
@@ -2604,7 +2575,6 @@ class SwaggerController extends Controller
                 '</svg>' +
             '</button>';
 
-            // Add each version
             for (const version of availableVersions) {
                 html += '<button class="version-menu-item ' + (currentVersion === version.name ? 'active' : '') + '" onclick="switchVersion(\'' + version.name + '\')">' +
                     '<div class="version-name">' +
@@ -2624,7 +2594,6 @@ class SwaggerController extends Controller
             const dropdown = document.getElementById('version-switcher');
             dropdown.classList.toggle('active');
 
-            // Close other dropdowns
             document.getElementById('export-dropdown').classList.remove('active');
         }
 
@@ -2635,10 +2604,8 @@ class SwaggerController extends Controller
             updateVersionBadge();
             renderVersionMenu();
 
-            // Close dropdown
             document.getElementById('version-switcher').classList.remove('active');
 
-            // Reload Swagger UI with new spec
             reloadSwaggerUI();
         }
 
@@ -2657,7 +2624,6 @@ class SwaggerController extends Controller
         function reloadSwaggerUI() {
             const specUrl = getSpecUrl();
 
-            // Reinitialize Swagger UI
             window.ui = SwaggerUIBundle({
                 url: specUrl,
                 dom_id: '#swagger-ui',
@@ -2683,10 +2649,8 @@ class SwaggerController extends Controller
                 onComplete: function() {
                     updateStats();
 
-                    // Clear microlight inline backgrounds after render
                     setTimeout(clearMicrolightBackgrounds, 100);
 
-                    // Also observe for dynamically added code blocks
                     const observer = new MutationObserver(function(mutations) {
                         clearMicrolightBackgrounds();
                     });
@@ -2698,7 +2662,6 @@ class SwaggerController extends Controller
             });
         }
 
-        // Close version dropdown when clicking outside
         document.addEventListener('click', function(e) {
             const versionSwitcher = document.getElementById('version-switcher');
             if (versionSwitcher && !versionSwitcher.contains(e.target)) {
@@ -2741,12 +2704,10 @@ class SwaggerController extends Controller
             }
             authType = currentAuthType;
 
-            // Save to localStorage
             localStorage.setItem('api_auth_token', authToken);
             localStorage.setItem('api_auth_type', authType);
             localStorage.setItem('api_auth_header', apiKeyHeader);
 
-            // Update Swagger UI authorization
             if (window.ui && authToken) {
                 if (authType === 'bearer') {
                     window.ui.preauthorizeApiKey('bearerAuth', authToken);
@@ -2798,7 +2759,6 @@ class SwaggerController extends Controller
                 block.style.display = matches ? '' : 'none';
             });
 
-            // Hide empty tag sections
             tagSections.forEach(section => {
                 const visibleOps = section.querySelectorAll('.opblock:not([style*="display: none"])');
                 section.style.display = visibleOps.length > 0 || !query ? '' : 'none';
@@ -2833,7 +2793,6 @@ class SwaggerController extends Controller
         }
 
         window.onload = function() {
-            // Use versioned URL if a version was previously selected
             const specUrl = getSpecUrl();
 
             const ui = SwaggerUIBundle({
@@ -2863,7 +2822,6 @@ class SwaggerController extends Controller
                 onComplete: function() {
                     updateStats();
 
-                    // Apply saved authorization
                     if (authToken) {
                         setTimeout(() => {
                             if (authType === 'bearer') {
@@ -2872,10 +2830,8 @@ class SwaggerController extends Controller
                         }, 500);
                     }
 
-                    // Clear microlight inline backgrounds after render
                     setTimeout(clearMicrolightBackgrounds, 100);
 
-                    // Also observe for dynamically added code blocks
                     const observer = new MutationObserver(function(mutations) {
                         clearMicrolightBackgrounds();
                     });
@@ -2888,23 +2844,18 @@ class SwaggerController extends Controller
             window.ui = ui;
         };
 
-        // Close modal on escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeAuthModal();
             }
         });
 
-        // Close modal on overlay click
         document.getElementById('auth-modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeAuthModal();
             }
         });
 
-        // ============================================
-        // Export Functionality
-        // ============================================
 
         let cachedSpec = null;
         let cachedSpecVersion = null;
@@ -2913,11 +2864,9 @@ class SwaggerController extends Controller
             const dropdown = document.getElementById('export-dropdown');
             dropdown.classList.toggle('active');
 
-            // Close version dropdown
             document.getElementById('version-switcher').classList.remove('active');
         }
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('export-dropdown');
             if (!dropdown.contains(e.target)) {
@@ -2925,7 +2874,6 @@ class SwaggerController extends Controller
             }
         });
 
-        // Close dropdown on escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.getElementById('export-dropdown').classList.remove('active');
@@ -2933,7 +2881,6 @@ class SwaggerController extends Controller
         });
 
         async function getOpenApiSpec() {
-            // Invalidate cache if version changed
             if (cachedSpecVersion !== currentVersion) {
                 cachedSpec = null;
             }
@@ -2965,7 +2912,6 @@ class SwaggerController extends Controller
         }
 
         function showExportToast(type, title, description = '') {
-            // Remove existing toast
             const existingToast = document.querySelector('.export-toast');
             if (existingToast) existingToast.remove();
 
@@ -3009,7 +2955,6 @@ class SwaggerController extends Controller
             }
         }
 
-        // Simple JSON to YAML converter
         function jsonToYaml(obj, indent = 0) {
             const spaces = '  '.repeat(indent);
             let yaml = '';
@@ -3087,7 +3032,6 @@ class SwaggerController extends Controller
                 variable: []
             };
 
-            // Add server URL as variable
             if (spec.servers && spec.servers.length > 0) {
                 collection.variable.push({
                     key: 'baseUrl',
@@ -3096,7 +3040,6 @@ class SwaggerController extends Controller
                 });
             }
 
-            // Group endpoints by tags
             const taggedItems = {};
             const untaggedItems = [];
 
@@ -3116,7 +3059,6 @@ class SwaggerController extends Controller
                 }
             }
 
-            // Create folders for each tag
             for (const [tag, items] of Object.entries(taggedItems)) {
                 collection.item.push({
                     name: tag,
@@ -3142,12 +3084,10 @@ class SwaggerController extends Controller
                 response: []
             };
 
-            // Add description
             if (operation.description) {
                 item.request.description = operation.description;
             }
 
-            // Handle path parameters
             if (operation.parameters) {
                 const queryParams = [];
                 const pathVariables = [];
@@ -3184,7 +3124,6 @@ class SwaggerController extends Controller
                 }
             }
 
-            // Handle request body
             if (operation.requestBody) {
                 const content = operation.requestBody.content;
                 if (content && content['application/json']) {
@@ -3208,7 +3147,6 @@ class SwaggerController extends Controller
         function getSchemaExample(schema, spec, visited = new Set()) {
             if (!schema) return {};
 
-            // Handle \$ref
             if (schema['\$ref']) {
                 const refPath = schema['\$ref'].replace('#/components/schemas/', '');
                 if (visited.has(refPath)) return {};
@@ -3218,10 +3156,8 @@ class SwaggerController extends Controller
                 return {};
             }
 
-            // Handle example
             if (schema.example !== undefined) return schema.example;
 
-            // Handle type
             switch (schema.type) {
                 case 'object':
                     const obj = {};
@@ -3286,7 +3222,6 @@ class SwaggerController extends Controller
                 }
             ];
 
-            // Create folders for tags
             const tagFolders = {};
             if (spec.tags) {
                 for (const tag of spec.tags) {
@@ -3302,7 +3237,6 @@ class SwaggerController extends Controller
                 }
             }
 
-            // Create requests
             if (spec.paths) {
                 for (const [path, methods] of Object.entries(spec.paths)) {
                     for (const [method, operation] of Object.entries(methods)) {
@@ -3352,7 +3286,6 @@ class SwaggerController extends Controller
                 body: {}
             };
 
-            // Handle parameters
             if (operation.parameters) {
                 for (const param of operation.parameters) {
                     if (param.in === 'query') {
@@ -3373,7 +3306,6 @@ class SwaggerController extends Controller
                 }
             }
 
-            // Handle request body
             if (operation.requestBody) {
                 const content = operation.requestBody.content;
                 if (content && content['application/json']) {
@@ -3395,9 +3327,6 @@ class SwaggerController extends Controller
             return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         }
 
-        // ============================================
-        // WebSocket Tester
-        // ============================================
 
         let wsConnection = null;
         let wsConnected = false;
@@ -3583,14 +3512,12 @@ class SwaggerController extends Controller
             }
         }
 
-        // Close WS modal on escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeWsModal();
             }
         });
 
-        // Close WS modal on overlay click
         document.getElementById('ws-modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeWsModal();
