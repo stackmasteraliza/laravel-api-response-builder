@@ -7,9 +7,5 @@ parameters:
 
     level: 5
 
-    ignoreErrors:
-
     excludePaths:
         - vendor
-
-    checkMissingIterableValueType: false
