@@ -24,4 +24,10 @@ Contributions are welcome and will be fully credited!
 composer test
 ```
 
+## Running Static Analysis
+
+```bash
+composer analyse
+```
+
 **Happy coding**!
