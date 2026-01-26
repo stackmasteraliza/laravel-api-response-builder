@@ -10,10 +10,12 @@ parameters:
     excludePaths:
         - vendor
 
+    reportUnmatchedIgnoredErrors: false
+
     ignoreErrors:
         - '#Call to an undefined method Illuminate\\Pagination\\AbstractPaginator::#'
         - '#Instanceof between mixed and Illuminate\\Http\\Resources\\Json\\ResourceCollection#'
         - '#Argument of an invalid type Illuminate\\Routing\\RouteCollectionInterface#'
-        - '#Using nullsafe property access on left side of#'
+        - '#Using nullsafe property access .* on left side of \?\? is unnecessary#'
         - '#Offset .* on .* on left side of \?\? always exists#'
         - '#Trait Stackmasteraliza\\ApiResponse\\Traits\\HasApiResponse is used zero times#'
