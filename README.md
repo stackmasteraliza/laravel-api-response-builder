@@ -23,7 +23,7 @@ A clean and consistent API response builder for Laravel applications. This packa
 
 <p align="center">
   <a href="https://github.com/stackmasteraliza">
-    <img src="https://github.com/stackmasteraliza.png" width="80" height="80" style="border-radius: 50%;" alt="Aliza Ali">
+    <img src="https://images.weserv.nl/?url=github.com/stackmasteraliza.png&w=80&h=80&fit=cover&mask=circle" alt="Aliza Ali">
   </a>
   <br>
   <b>Developed by <a href="https://github.com/stackmasteraliza">Aliza Ali</a></b>
