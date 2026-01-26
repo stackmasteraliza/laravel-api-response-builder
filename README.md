@@ -3,13 +3,14 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Tests-Passing-brightgreen" alt="Tests">
   <a href="https://packagist.org/packages/stackmasteraliza/laravel-api-response"><img src="https://img.shields.io/packagist/v/stackmasteraliza/laravel-api-response.svg" alt="Latest Version on Packagist"></a>
   <a href="https://packagist.org/packages/stackmasteraliza/laravel-api-response"><img src="https://img.shields.io/packagist/dt/stackmasteraliza/laravel-api-response.svg" alt="Total Downloads"></a>
   <a href="https://doi.org/10.5281/zenodo.18204415"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.18204415.svg" alt="DOI"></a>
   <a href="https://packagist.org/packages/stackmasteraliza/laravel-api-response"><img src="https://img.shields.io/packagist/l/stackmasteraliza/laravel-api-response.svg" alt="License"></a>
   <a href="https://laravel-news.com"><img src="https://img.shields.io/badge/Laravel%20News-Featured-orange" alt="Laravel News"></a>
-  <img src="https://img.shields.io/badge/PHP-8.1%2B-blue" alt="PHP Version">
-  <img src="https://img.shields.io/badge/Laravel-10%20%7C%2011%20%7C%2012-red" alt="Laravel Version">
+  <img src="https://img.shields.io/badge/PHP-8.1%2B-777BB4" alt="PHP Version">
+  <img src="https://img.shields.io/badge/Laravel-10%20%7C%2011%20%7C%2012-FF2D20" alt="Laravel Version">
 </p>
 
 # Laravel API Toolkit
@@ -20,10 +21,14 @@
 
 A clean and consistent API response builder for Laravel applications. This package provides a simple and elegant way to build standardized JSON responses for your APIs with zero-config OpenAPI documentation.
 
-<p>
-  <img src="https://github.com/stackmasteraliza.png" width="50" height="50" style="border-radius: 50%;" alt="Aliza Ali">
+<p align="center">
+  <a href="https://github.com/stackmasteraliza">
+    <img src="https://github.com/stackmasteraliza.png" width="80" height="80" style="border-radius: 50%;" alt="Aliza Ali">
+  </a>
   <br>
-  <strong>Developed by <a href="https://github.com/stackmasteraliza">Aliza Ali</a></strong>
+  <b>Developed by <a href="https://github.com/stackmasteraliza">Aliza Ali</a></b>
+  <br>
+  <sub>Creator & Maintainer</sub>
 </p>
 
 ## Features
